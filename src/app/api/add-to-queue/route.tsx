@@ -11,11 +11,24 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        const newQueueEntry = await prisma.queue.create({
-            data: {
-                runnerId: runnerId,
+        const newQueueEntry = await prisma.$transaction(
+            async (tx) => {
+                const { _max } = await tx.queue.aggregate({
+                    _max: { queuePlace: true },
+                });
+
+                const nextPlace = (_max.queuePlace ?? 0) + 1;
+
+                return tx.queue.create({
+                    data: {
+                        runnerId,
+                        queuePlace: nextPlace,
+                    },
+                });
             },
-        });
+            // This avoids race conditions between concurrent requests
+            { isolationLevel: "Serializable" }
+        );
 
         return NextResponse.json(newQueueEntry, { status: 200 });
     } catch (error) {

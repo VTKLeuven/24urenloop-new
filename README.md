@@ -10,8 +10,7 @@ Prerequisits:
 2. Run `npm install` in the root directory
 3. Set up postgresql database:
 ```
-sudo -i -u postgres
-psql
+psql -d postgres
 DROP DATABASE IF EXISTS "24urenloop";
 DROP USER IF EXISTS <username>;
 CREATE USER <username> WITH PASSWORD '<password>' CREATEDB;
