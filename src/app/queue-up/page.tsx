@@ -146,28 +146,36 @@ export default function Page() {
 
     return (
         <div className="flex flex-col justify-center items-center w-full h-full">
-            <div className="p-4 mx-auto max-w-lg w-full">
-                <h1 className="text-xl font-bold mb-4">Queue Up</h1>
+            <div className="bg-white rounded-lg shadow-md p-6 mx-auto max-w-lg w-full">
+                <h1 className="text-2xl font-bold mb-6">Queue Up</h1>
 
-                <h4 className="text-l font-bold mb-4">Add existing runner</h4>
-                <div className="mb-4 relative">
+                {/* Add existing runner */}
+                <h4 className="text-lg font-semibold mb-3">Add existing runner</h4>
+                <div className="mb-6 relative">
                     <input
                         type="text"
                         placeholder="Search by First Name, Last Name, or ID"
                         value={searchQuery}
                         onChange={handleSearchQueryChange}
                         onFocus={handleSearchFocus}
-                        className="border p-2 w-full"
+                        className="rounded-md px-3 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
                     />
                     {showResults && searchResults.length > 0 && (
-                        <ul className="absolute z-10 w-full bg-white border border-t-0 shadow-lg">
+                        <ul className="absolute z-10 w-full bg-white shadow-lg rounded-b-md max-h-48 overflow-auto">
                             {searchResults.map((result) => (
                                 <li
                                     key={result.id}
-                                    className={`p-2 cursor-pointer ${selectedRunner?.id === result.id ? 'bg-gray-200' : ''}`}
+                                    className={`px-3 py-2 cursor-pointer hover:bg-green-50 ${
+                                        selectedRunner?.id === result.id ? "bg-green-100" : ""
+                                    }`}
                                     onClick={() => handleRunnerClick(result)}
                                 >
-                                    {result.firstName} {result.lastName} - {result.identification}
+              <span className="font-medium">
+                {result.firstName} {result.lastName}
+              </span>{" "}
+                                    <span className="text-gray-600 text-sm">
+                ({result.identification})
+              </span>
                                 </li>
                             ))}
                         </ul>
@@ -175,35 +183,71 @@ export default function Page() {
                     {selectedRunner && (
                         <button
                             onClick={() => addToQueue(selectedRunner)}
-                            className="mt-2 bg-blue-500 text-white p-2 rounded"
+                            className="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-semibold w-full"
                         >
                             Add to Queue
                         </button>
                     )}
                 </div>
 
-                <h4 className="text-l font-bold mb-4">Add new runner</h4>
+                {/* Add new runner */}
+                <h4 className="text-lg font-semibold mb-3">Add new runner</h4>
                 <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
-                    <input type="text" name="firstName" placeholder="First Name" value={runner.firstName}
-                           onChange={handleChange} required className="border p-2"/>
-                    <input type="text" name="lastName" placeholder="Last Name" value={runner.lastName}
-                           onChange={handleChange} required className="border p-2"/>
-                    <input type="text" name="identification" placeholder="Identification Number"
-                           value={runner.identification} onChange={handleChange} required className="border p-2"/>
-                    <select name="facultyId" value={runner.facultyId} onChange={handleChange} required
-                            className="border p-2">
-                        <option value="" disabled>Select Faculty</option>
-                        {faculties.map(faculty => (
+                    <input
+                        type="text"
+                        name="firstName"
+                        placeholder="First Name"
+                        value={runner.firstName}
+                        onChange={handleChange}
+                        required
+                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    />
+                    <input
+                        type="text"
+                        name="lastName"
+                        placeholder="Last Name"
+                        value={runner.lastName}
+                        onChange={handleChange}
+                        required
+                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    />
+                    <input
+                        type="text"
+                        name="identification"
+                        placeholder="Identification Number"
+                        value={runner.identification}
+                        onChange={handleChange}
+                        required
+                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    />
+                    <select
+                        name="facultyId"
+                        value={runner.facultyId}
+                        onChange={handleChange}
+                        required
+                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    >
+                        <option value="" disabled>
+                            Select Faculty
+                        </option>
+                        {faculties.map((faculty) => (
                             <option key={faculty.id} value={faculty.id}>
                                 {faculty.name}
                             </option>
                         ))}
                     </select>
                     <div>
-                        <select name="groupNumber" value={runner.groupNumber} onChange={handleChange} required
-                                className="border p-2 w-full">
-                            <option value="" disabled>Select Group</option>
-                            {groups.map(group => (
+                        <select
+                            name="groupNumber"
+                            value={runner.groupNumber}
+                            onChange={handleChange}
+                            required
+                            className="rounded-md px-3 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        >
+                            <option value="" disabled>
+                                Select Group
+                            </option>
+                            {groups.map((group) => (
                                 <option key={group.groupNumber} value={group.groupNumber}>
                                     {group.groupName}
                                 </option>
@@ -212,21 +256,40 @@ export default function Page() {
                         <button
                             type="button"
                             onClick={() => setShowGroupModal(true)}
-                            className="mt-2 text-sm text-blue-600 underline"
+                            className="mt-2 text-sm text-green-600 hover:underline"
                         >
                             + Create New Group
                         </button>
                     </div>
-                    <input type="text" name="testTime" placeholder="Test Time (mm:ss)" pattern="\d{2}:\d{2}"
-                           value={runner.testTime} onChange={handleChange} className="border p-2"/>
+                    <input
+                        type="text"
+                        name="testTime"
+                        placeholder="Test Time (mm:ss)"
+                        pattern="\d{2}:\d{2}"
+                        value={runner.testTime}
+                        onChange={handleChange}
+                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    />
                     <label className="flex items-center space-x-2">
-                        <input type="checkbox" name="firstYear" checked={runner.firstYear} onChange={handleChange}/>
-                        <span>First Year</span>
+                        <input
+                            type="checkbox"
+                            name="firstYear"
+                            checked={runner.firstYear}
+                            onChange={handleChange}
+                            className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                        />
+                        <span className="text-sm">First Year</span>
                     </label>
-                    <button type="submit" className="bg-blue-500 text-white p-2 rounded">Add Runner</button>
+                    <button
+                        type="submit"
+                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-semibold w-full"
+                    >
+                        Add Runner
+                    </button>
                 </form>
             </div>
 
+            {/* Group Modal */}
             {showGroupModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-80">
@@ -236,13 +299,19 @@ export default function Page() {
                             placeholder="Group Name"
                             value={newGroupName}
                             onChange={(e) => setNewGroupName(e.target.value)}
-                            className="border p-2 w-full mb-4"
+                            className="rounded-md px-3 py-2 w-full mb-4 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
                         />
                         <div className="flex justify-end space-x-2">
-                            <button onClick={() => setShowGroupModal(false)} className="px-4 py-2 bg-gray-300 rounded">
+                            <button
+                                onClick={() => setShowGroupModal(false)}
+                                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md"
+                            >
                                 Cancel
                             </button>
-                            <button onClick={handleCreateGroup} className="px-4 py-2 bg-blue-500 text-white rounded">
+                            <button
+                                onClick={handleCreateGroup}
+                                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold"
+                            >
                                 Create
                             </button>
                         </div>
