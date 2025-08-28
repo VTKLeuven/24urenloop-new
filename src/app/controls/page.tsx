@@ -95,42 +95,71 @@ export default function ControlsPage() {
     };
 
     return (
-        <div className="p-4">
-            <h1 className="text-xl font-bold mb-4">Controls</h1>
-            <div className="mb-4">
-                <h2 className="text-l font-semibold">Previous Runner</h2>
-                {previousRunner ? (
-                    <div>
-                        <p>Name: {previousRunner.firstName} {previousRunner.lastName}</p>
-                        <p>Lap Time: {previousRunner.lapTime}</p>
-                    </div>
-                ) : (
-                    <p>No previous runner</p>
-                )}
+        <div className="flex flex-col justify-center items-center w-full h-full">
+            <div className="bg-white rounded-lg shadow-md p-6 mx-auto max-w-lg w-full">
+                <h1 className="text-2xl font-bold mb-6">Controls</h1>
+
+                {/* Previous Runner */}
+                <div className="mb-6">
+                    <h2 className="text-lg font-semibold mb-1">Previous Runner</h2>
+                    {previousRunner ? (
+                        <div className="text-gray-800 text-sm space-y-1">
+                            <p><span className="font-medium">Name:</span> {previousRunner.firstName} {previousRunner.lastName}</p>
+                            <p><span className="font-medium">Lap Time:</span> {previousRunner.lapTime}</p>
+                        </div>
+                    ) : (
+                        <p className="text-gray-500 italic">No previous runner</p>
+                    )}
+                </div>
+
+                {/* Current Runner */}
+                <div className="mb-6">
+                    <h2 className="text-lg font-semibold mb-1">Current Runner</h2>
+                    {currentRunner ? (
+                        <div className="text-gray-800 text-sm space-y-1">
+                            <p><span className="font-medium">Name:</span> {currentRunner.firstName} {currentRunner.lastName}</p>
+                            <p><span className="font-medium">Timer:</span> {formatTime(timer)}</p>
+                        </div>
+                    ) : (
+                        <p className="text-gray-500 italic">No current runner</p>
+                    )}
+                </div>
+
+                {/* Next Runner */}
+                <div className="mb-6">
+                    <h2 className="text-lg font-semibold mb-1">Next Runner</h2>
+                    {nextRunner ? (
+                        <div className="text-gray-800 text-sm space-y-1">
+                            <p><span className="font-medium">Name:</span> {nextRunner.firstName} {nextRunner.lastName}</p>
+                        </div>
+                    ) : (
+                        <p className="text-gray-500 italic">No next runner</p>
+                    )}
+                </div>
+
+                {/* Action buttons (stacked) */}
+                <div className="flex items-stretch gap-3">
+                    <Button
+                        onClick={handleStartNextRunner}
+                        disabled={!nextRunner}
+                        // primary
+                        variant="default"
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Start Next Runner
+                    </Button>
+
+                    <Button
+                        onClick={handleUndo}
+                        disabled={!previousRunner || !currentRunner}
+                        // outlined secondary (no black)
+                        variant="outline"
+                        className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Undo
+                    </Button>
+                </div>
             </div>
-            <div className="mb-4">
-                <h2 className="text-l font-semibold">Current Runner</h2>
-                {currentRunner ? (
-                    <div>
-                        <p>Name: {currentRunner.firstName} {currentRunner.lastName}</p>
-                        <p>Timer: {formatTime(timer)}</p>
-                    </div>
-                ) : (
-                    <p>No current runner</p>
-                )}
-            </div>
-            <div className="mb-4">
-                <h2 className="text-l font-semibold">Next Runner</h2>
-                {nextRunner ? (
-                    <div>
-                        <p>Name: {nextRunner.firstName} {nextRunner.lastName}</p>
-                    </div>
-                ) : (
-                    <p>No next runner</p>
-                )}
-            </div>
-            <Button onClick={handleStartNextRunner} disabled={!nextRunner} className="bg-blue-500 text-white p-2 rounded">Start Next Runner</Button>
-            <Button onClick={handleUndo} disabled={!previousRunner || !currentRunner} className="bg-blue-500 text-white p-2 rounded" >Undo</Button>
         </div>
     );
 }

@@ -52,20 +52,40 @@ export default function LiveRunners() {
     const nextRunner = data.currentQueue.length > 0 ? data.currentQueue[0] : { name: 'none' };
 
     return (
-        <div className="h-full w-full flex flex-col">
-            <div className="flex-grow border p-4 flex flex-col items-center justify-center">
-                <h2 className="text-2xl font-bold mb-2">Previous Runner</h2>
-                <p>Name: {previousRunner.name}</p>
-                <p>Time: {(previousRunner.time / 100).toFixed(2)}s</p>
+        <div className="h-full w-full flex flex-col gap-6">
+            {/* Previous Runner */}
+            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-green-500 flex flex-col items-center justify-center">
+                <h2 className="text-xl font-semibold text-green-600 mb-2">Previous Runner</h2>
+                <p className="text-gray-700 text-lg">
+                    <span className="font-medium">Name:</span> {previousRunner.name}
+                </p>
+                <p className="text-gray-700 text-lg">
+                    <span className="font-medium">Time:</span>{" "}
+                    {isNaN(previousRunner.time)
+                        ? "—"
+                        : (previousRunner.time / 100).toFixed(2) + "s"}
+                </p>
             </div>
-            <div className="flex-grow border p-4 flex flex-col items-center justify-center">
-                <h2 className="text-2xl font-bold mb-2">Current Runner</h2>
-                <p>Name: {data.currentRunner.name ? data.currentRunner.name : "none"}</p>
-                <p>Time: {(data.currentRunner.time! / 1000).toFixed(2)}s</p>
+
+            {/* Current Runner */}
+            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-green-600 flex flex-col items-center justify-center">
+                <h2 className="text-xl font-semibold text-green-600 mb-2">Current Runner</h2>
+                <p className="text-gray-700 text-lg">
+                    <span className="font-medium">Name:</span>{" "}
+                    {data.currentRunner.name || "none"}
+                </p>
+                <p className="text-gray-700 text-lg">
+                    <span className="font-medium">Time:</span>{" "}
+                    {(data.currentRunner.time! / 1000).toFixed(2)}s
+                </p>
             </div>
-            <div className="flex-grow border p-4 flex flex-col items-center justify-center">
-                <h2 className="text-2xl font-bold mb-2">Next Runner</h2>
-                <p>Name: {nextRunner.name}</p>
+
+            {/* Next Runner */}
+            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-green-500 flex flex-col items-center justify-center">
+                <h2 className="text-xl font-semibold text-green-600 mb-2">Next Runner</h2>
+                <p className="text-gray-700 text-lg">
+                    <span className="font-medium">Name:</span> {nextRunner.name}
+                </p>
             </div>
         </div>
     );
