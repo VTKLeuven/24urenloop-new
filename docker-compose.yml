@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: 24urenloop
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    ports:
+      - "5432:5432"            # optional: exposes DB to host (useful for local tools / Prisma Studio outside Docker)
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  app:
+    build: src
+    restart: unless-stopped
+    working_dir: /app
+    # Mount your source for hot reload
+    volumes:
+      - .:/app
+      # keep node_modules inside the container
+      - /app/node_modules
+    environment:
+      # Point Prisma/your code to the *container* hostname "db"
+      DATABASE_URL: postgres://app:app@db:5432/24urenloop
+      # If you use Next.js 13+:
+      # NEXT_PUBLIC_* stuff can go here as well
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    command: ["npm", "run", "dev", "--", "-H", "0.0.0.0"]  # bind to all interfaces so LAN devices can reach it
+
+  # One-off seeder using your existing Python script
+  seed:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgres://app:app@db:5432/24urenloop
+    depends_on:
+      - db
+    # Installs only what the seeder needs and runs it
+    command: >
+      sh -c "pip install --no-cache-dir psycopg2-binary python-dotenv &&
+             python3 initialize_db.py"
+
+volumes:
+  db-data:
