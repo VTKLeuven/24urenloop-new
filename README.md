@@ -14,24 +14,11 @@ Everything runs in Docker, so you don’t need to install Postgres manually.
 
 ### 1. Clone the repository
 ```bash
-git clone <repo-url>
-cd <repo-name>
+git clone https://github.com/VTKLeuven/24urenloop-new.git
+cd 24urenloop-new
 ```
 
-### 2. Create your environment file
-Copy the example and adjust if needed:
-
-```bash
-cp .env.example .env
-```
-
-Default content (works out of the box with Docker):
-
-```ini
-DATABASE_URL=postgres://app:app@db:5432/24urenloop
-```
-
-### 3. Start the containers
+### 2. Build the containers
 ```bash
 docker compose up -d --build
 ```
@@ -40,28 +27,14 @@ This runs:
 - **db** → PostgreSQL 16
 - **app** → Next.js dev server (hot reload)
 
-### 4. Run Prisma migrations
-```bash
-docker compose exec app npx prisma migrate dev --name init
-```
-
-### 5. Seed the database (dummy data)
-The seed container automatically runs the first time only.
-If you need to reseed manually, remove the seed flag volume:
-```bash
-docker compose rm -sf seed
-docker volume rm <project>_seed-flag
-docker compose up seed
-```
-
-### 6. Open the app
+### 3. Open the app
 - On your machine: [http://localhost:3000](http://localhost:3000)
 - On other devices in your LAN: `http://<your-computer-IP>:3000`
     - Find your IP with:
         - macOS/Linux → `ip addr`
         - Windows → `ipconfig`
 
-### 7. Open Prisma Studio
+### 4. Open Prisma Studio
 ```
 http://localhost:5555
 ```

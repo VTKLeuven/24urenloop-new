@@ -14,67 +14,97 @@ services:
       timeout: 3s
       retries: 20
 
+  # Run Prisma migrations automatically (non-interactive) on startup
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      DATABASE_URL: postgres://app:app@db:5432/24urenloop
+      NEXT_TELEMETRY_DISABLED: "1"
+    restart: "no"
+    command: [
+      "sh","-lc",
+      "if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then npm ci; fi; npx prisma migrate deploy"
+    ]
+
+  # Seed runs after migrations; only first time thanks to seed-flag volume
+  seed:
+    image: python:3.12-slim
+    working_dir: /app
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - .:/app
+      - seed-flag:/flags
+    environment:
+      DATABASE_URL: postgres://app:app@db:5432/24urenloop
+    restart: "no"
+    command: [
+      "sh","-c",
+      "if [ ! -f /flags/seeded ]; then echo 'Seeding DB first run...'; pip install --no-cache-dir psycopg2-binary python-dotenv && python3 initialize_db.py && touch /flags/seeded && echo 'Seeding complete.'; else echo 'DB already seeded - skipping.'; fi"
+    ]
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
     working_dir: /app
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    # Mount source for hot reload; keep node_modules inside container
     volumes:
       - .:/app
-      # NOTE: remove the anonymous node_modules volume unless you also run npm ci in-container.
-      # If you want to keep hot reload without host node_modules conflicts, uncomment the next line
-      # and add a post-start npm ci (see notes below).
-      # - /app/node_modules
+      - /app/node_modules
     environment:
       DATABASE_URL: postgres://app:app@db:5432/24urenloop
-    depends_on:
-      db:
-        condition: service_healthy
+      NEXT_TELEMETRY_DISABLED: "1"
     ports:
       - "3000:3000"
-    command: ["npm", "run", "dev", "--", "-H", "0.0.0.0"]
-
-  # Run ONCE thanks to the shared seed-flag volume
-  seed:
-    image: python:3.12-slim
-    working_dir: /app
-    volumes:
-      - .:/app
-      - seed-flag:/flags
-    environment:
-      DATABASE_URL: postgres://app:app@db:5432/24urenloop
-    depends_on:
-      db:
-        condition: service_healthy
     command: >
-      sh -c 'if [ ! -f /flags/seeded ]; then
-               echo "Seeding DB (first run)...";
-               pip install --no-cache-dir psycopg2-binary python-dotenv &&
-               python3 initialize_db.py &&
-               touch /flags/seeded &&
-               echo "Seeding complete.";
-             else
-               echo "DB already seeded — skipping.";
-             fi'
+      sh -lc "
+        if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then
+          echo 'Installing node_modules in app container...';
+          npm ci;
+        fi;
+        npx next dev -H 0.0.0.0 -p 3000
+      "
 
-  # Prisma Studio exposed on localhost:5555
+  # Prisma Studio on localhost:5555 (no --host/--port flags; publish port instead)
   studio:
     build:
       context: .
       dockerfile: Dockerfile
     working_dir: /app
-    # IMPORTANT: don't mask image node_modules for studio
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     volumes:
-      - .:/app:rw
+      - .:/app
+      - /app/node_modules
     environment:
       DATABASE_URL: postgres://app:app@db:5432/24urenloop
-    depends_on:
-      db:
-        condition: service_healthy
     ports:
       - "5555:5555"
-    command: ["npx", "prisma", "studio", "--host", "0.0.0.0", "--port", "5555"]
+    restart: unless-stopped
+    command: >
+      sh -lc "
+        if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then
+          echo 'Installing node_modules in studio container...';
+          npm ci;
+        fi;
+        npx prisma studio
+      "
 
 volumes:
   db-data:
