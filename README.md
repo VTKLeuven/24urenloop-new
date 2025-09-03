@@ -46,8 +46,12 @@ docker compose exec app npx prisma migrate dev --name init
 ```
 
 ### 5. Seed the database (dummy data)
+The seed container automatically runs the first time only.
+If you need to reseed manually, remove the seed flag volume:
 ```bash
-docker compose run --rm seed
+docker compose rm -sf seed
+docker volume rm <project>_seed-flag
+docker compose up seed
 ```
 
 ### 6. Open the app
@@ -57,9 +61,14 @@ docker compose run --rm seed
         - macOS/Linux → `ip addr`
         - Windows → `ipconfig`
 
+### 7. Open Prisma Studio
+```
+http://localhost:5555
+```
+
 ---
 
-## 🛠 Development Workflow
+## Development Workflow
 
 - **Start containers**
   ```bash
@@ -85,29 +94,6 @@ docker compose run --rm seed
   docker compose run --rm seed
   ```
 
----
-
-## 📊 Prisma Studio (database UI)
-
-**Option A — run inside Docker**
-```bash
-docker compose exec app npx prisma studio --host 0.0.0.0 --port 5555
-```
-
-Expose the port in `docker-compose.yml`:
-```yaml
-ports:
-  - "5555:5555"
-```
-
-Then open: [http://localhost:5555](http://localhost:5555)
-
-**Option B — run locally**
-
-Since we map Postgres to `localhost:5432`, you can run:
-```bash
-npx prisma studio
-```
 
 ---
 
@@ -130,7 +116,7 @@ npx prisma studio
 
 ---
 
-## 📜 Useful commands
+## Useful commands
 
 - **Run a one-off command in the app:**
   ```bash

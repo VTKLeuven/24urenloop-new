@@ -6,45 +6,76 @@ services:
       POSTGRES_DB: 24urenloop
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app
-    ports:
-      - "5432:5432"            # optional: exposes DB to host (useful for local tools / Prisma Studio outside Docker)
     volumes:
       - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d 24urenloop"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
   app:
-    build: src
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     working_dir: /app
-    # Mount your source for hot reload
     volumes:
       - .:/app
-      # keep node_modules inside the container
-      - /app/node_modules
+      # NOTE: remove the anonymous node_modules volume unless you also run npm ci in-container.
+      # If you want to keep hot reload without host node_modules conflicts, uncomment the next line
+      # and add a post-start npm ci (see notes below).
+      # - /app/node_modules
     environment:
-      # Point Prisma/your code to the *container* hostname "db"
       DATABASE_URL: postgres://app:app@db:5432/24urenloop
-      # If you use Next.js 13+:
-      # NEXT_PUBLIC_* stuff can go here as well
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "3000:3000"
-    command: ["npm", "run", "dev", "--", "-H", "0.0.0.0"]  # bind to all interfaces so LAN devices can reach it
+    command: ["npm", "run", "dev", "--", "-H", "0.0.0.0"]
 
-  # One-off seeder using your existing Python script
+  # Run ONCE thanks to the shared seed-flag volume
   seed:
     image: python:3.12-slim
     working_dir: /app
     volumes:
       - .:/app
+      - seed-flag:/flags
     environment:
       DATABASE_URL: postgres://app:app@db:5432/24urenloop
     depends_on:
-      - db
-    # Installs only what the seeder needs and runs it
+      db:
+        condition: service_healthy
     command: >
-      sh -c "pip install --no-cache-dir psycopg2-binary python-dotenv &&
-             python3 initialize_db.py"
+      sh -c 'if [ ! -f /flags/seeded ]; then
+               echo "Seeding DB (first run)...";
+               pip install --no-cache-dir psycopg2-binary python-dotenv &&
+               python3 initialize_db.py &&
+               touch /flags/seeded &&
+               echo "Seeding complete.";
+             else
+               echo "DB already seeded — skipping.";
+             fi'
+
+  # Prisma Studio exposed on localhost:5555
+  studio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    # IMPORTANT: don't mask image node_modules for studio
+    volumes:
+      - .:/app:rw
+    environment:
+      DATABASE_URL: postgres://app:app@db:5432/24urenloop
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "5555:5555"
+    command: ["npx", "prisma", "studio", "--host", "0.0.0.0", "--port", "5555"]
 
 volumes:
   db-data:
+  seed-flag:
