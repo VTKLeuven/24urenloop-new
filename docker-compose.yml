@@ -14,7 +14,7 @@ services:
       timeout: 3s
       retries: 20
 
-  # Run Prisma migrations automatically (non-interactive) on startup
+  # Run Prisma generate + migrations automatically (non-interactive) on startup
   migrate:
     build:
       context: .
@@ -32,7 +32,7 @@ services:
     restart: "no"
     command: [
       "sh","-lc",
-      "if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then npm ci; fi; npx prisma migrate deploy"
+      "if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then npm ci; fi; npx prisma generate; npx prisma migrate deploy"
     ]
 
   # Seed runs after migrations; only first time thanks to seed-flag volume
@@ -77,10 +77,11 @@ services:
           echo 'Installing node_modules in app container...';
           npm ci;
         fi;
+        npx prisma generate;
         npx next dev -H 0.0.0.0 -p 3000
       "
 
-  # Prisma Studio on localhost:5555 (no --host/--port flags; publish port instead)
+  # Prisma Studio on localhost:5555 (publish port; no --host/--port flags)
   studio:
     build:
       context: .
@@ -103,6 +104,7 @@ services:
           echo 'Installing node_modules in studio container...';
           npm ci;
         fi;
+        npx prisma generate;
         npx prisma studio
       "
 
