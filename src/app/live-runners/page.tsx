@@ -54,8 +54,8 @@ export default function LiveRunners() {
     return (
         <div className="h-full w-full flex flex-col gap-6">
             {/* Previous Runner */}
-            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-green-500 flex flex-col items-center justify-center">
-                <h2 className="text-xl font-semibold text-green-600 mb-2">Previous Runner</h2>
+            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-500 flex flex-col items-center justify-center">
+                <h2 className="text-xl font-semibold text-blue-600 mb-2">Previous Runner</h2>
                 <p className="text-gray-700 text-lg">
                     <span className="font-medium">Name:</span> {previousRunner.name}
                 </p>
@@ -68,8 +68,8 @@ export default function LiveRunners() {
             </div>
 
             {/* Current Runner */}
-            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-green-600 flex flex-col items-center justify-center">
-                <h2 className="text-xl font-semibold text-green-600 mb-2">Current Runner</h2>
+            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-600 flex flex-col items-center justify-center">
+                <h2 className="text-xl font-semibold text-blue-600 mb-2">Current Runner</h2>
                 <p className="text-gray-700 text-lg">
                     <span className="font-medium">Name:</span>{" "}
                     {data.currentRunner.name || "none"}
@@ -81,8 +81,8 @@ export default function LiveRunners() {
             </div>
 
             {/* Next Runner */}
-            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-green-500 flex flex-col items-center justify-center">
-                <h2 className="text-xl font-semibold text-green-600 mb-2">Next Runner</h2>
+            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-500 flex flex-col items-center justify-center">
+                <h2 className="text-xl font-semibold text-blue-600 mb-2">Next Runner</h2>
                 <p className="text-gray-700 text-lg">
                     <span className="font-medium">Name:</span> {nextRunner.name}
                 </p>

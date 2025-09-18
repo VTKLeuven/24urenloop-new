@@ -158,15 +158,15 @@ export default function Page() {
                         value={searchQuery}
                         onChange={handleSearchQueryChange}
                         onFocus={handleSearchFocus}
-                        className="rounded-md px-3 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        className="rounded-md px-3 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                     {showResults && searchResults.length > 0 && (
                         <ul className="absolute z-10 w-full bg-white shadow-lg rounded-b-md max-h-48 overflow-auto">
                             {searchResults.map((result) => (
                                 <li
                                     key={result.id}
-                                    className={`px-3 py-2 cursor-pointer hover:bg-green-50 ${
-                                        selectedRunner?.id === result.id ? "bg-green-100" : ""
+                                    className={`px-3 py-2 cursor-pointer hover:bg-blue-50 ${
+                                        selectedRunner?.id === result.id ? "bg-blue-100" : ""
                                     }`}
                                     onClick={() => handleRunnerClick(result)}
                                 >
@@ -183,7 +183,7 @@ export default function Page() {
                     {selectedRunner && (
                         <button
                             onClick={() => addToQueue(selectedRunner)}
-                            className="mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-semibold w-full"
+                            className="mt-3 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-semibold w-full"
                         >
                             Add to Queue
                         </button>
@@ -200,7 +200,7 @@ export default function Page() {
                         value={runner.firstName}
                         onChange={handleChange}
                         required
-                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                     <input
                         type="text"
@@ -209,7 +209,7 @@ export default function Page() {
                         value={runner.lastName}
                         onChange={handleChange}
                         required
-                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                     <input
                         type="text"
@@ -218,14 +218,14 @@ export default function Page() {
                         value={runner.identification}
                         onChange={handleChange}
                         required
-                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                     <select
                         name="facultyId"
                         value={runner.facultyId}
                         onChange={handleChange}
                         required
-                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     >
                         <option value="" disabled>
                             Select Faculty
@@ -242,7 +242,7 @@ export default function Page() {
                             value={runner.groupNumber}
                             onChange={handleChange}
                             required
-                            className="rounded-md px-3 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                            className="rounded-md px-3 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         >
                             <option value="" disabled>
                                 Select Group
@@ -256,7 +256,7 @@ export default function Page() {
                         <button
                             type="button"
                             onClick={() => setShowGroupModal(true)}
-                            className="mt-2 text-sm text-green-600 hover:underline"
+                            className="mt-2 text-sm text-blue-600 hover:underline"
                         >
                             + Create New Group
                         </button>
@@ -268,7 +268,7 @@ export default function Page() {
                         pattern="\d{2}:\d{2}"
                         value={runner.testTime}
                         onChange={handleChange}
-                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                     <label className="flex items-center space-x-2">
                         <input
@@ -276,13 +276,13 @@ export default function Page() {
                             name="firstYear"
                             checked={runner.firstYear}
                             onChange={handleChange}
-                            className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                         />
                         <span className="text-sm">First Year</span>
                     </label>
                     <button
                         type="submit"
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-semibold w-full"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-semibold w-full"
                     >
                         Add Runner
                     </button>
@@ -299,7 +299,7 @@ export default function Page() {
                             placeholder="Group Name"
                             value={newGroupName}
                             onChange={(e) => setNewGroupName(e.target.value)}
-                            className="rounded-md px-3 py-2 w-full mb-4 border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                            className="rounded-md px-3 py-2 w-full mb-4 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         />
                         <div className="flex justify-end space-x-2">
                             <button
@@ -310,7 +310,7 @@ export default function Page() {
                             </button>
                             <button
                                 onClick={handleCreateGroup}
-                                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold"
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold"
                             >
                                 Create
                             </button>

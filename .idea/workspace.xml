@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="52a50b5c-d5a5-4b84-b9f2-737f162130e6" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/controls/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/controls/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/live-runners/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/live-runners/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/queue-up/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/queue-up/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/statistics/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/statistics/page.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,6 +131,7 @@
       <workItem from="1756403699761" duration="6469000" />
       <workItem from="1756924788992" duration="1375000" />
       <workItem from="1756926514921" duration="2118000" />
+      <workItem from="1758216107427" duration="169000" />
     </task>
     <servers />
   </component>

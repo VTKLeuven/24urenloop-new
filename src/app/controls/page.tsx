@@ -144,7 +144,7 @@ export default function ControlsPage() {
                         disabled={!nextRunner}
                         // primary
                         variant="default"
-                        className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Start Next Runner
                     </Button>

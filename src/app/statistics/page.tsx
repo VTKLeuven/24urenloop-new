@@ -61,14 +61,14 @@ function RowItem({
 }) {
     return (
         <div
-            className={`flex items-center p-2 rounded-md ${highlight ? 'bg-green-50' : 'bg-gray-50'}`}
+            className={`flex items-center p-2 rounded-md ${highlight ? 'bg-blue-50' : 'bg-gray-50'}`}
         >
             <div className="flex-1 min-w-0">
                 <div className="text-base font-medium truncate">{left}</div>
                 {subtitle && <div className="text-xs text-gray-600 truncate">{subtitle}</div>}
             </div>
             {right && (
-                <div className="text-base font-bold text-green-600 ml-2 shrink-0">{right}</div>
+                <div className="text-base font-bold text-blue-600 ml-2 shrink-0">{right}</div>
             )}
         </div>
     );
@@ -88,7 +88,7 @@ function IndexedRow({
 }) {
     return (
         <div
-            className={`flex items-center p-2 rounded-md ${highlight ? 'bg-green-50' : 'bg-gray-50'}`}
+            className={`flex items-center p-2 rounded-md ${highlight ? 'bg-blue-50' : 'bg-gray-50'}`}
         >
             <div className="mr-2 font-semibold text-gray-700 w-5 text-right text-sm">{index}.</div>
             <div className="flex-1 min-w-0">
@@ -165,7 +165,7 @@ export default function Statistics() {
                 {/* Header */}
                 <div className="flex justify-between items-end mb-6">
                     <h1 className="text-4xl font-bold">Runners Dashboard</h1>
-                    <div className="text-5xl font-bold text-green-600 tabular-nums">{countdown}</div>
+                    <div className="text-5xl font-bold text-blue-600 tabular-nums">{countdown}</div>
                 </div>
 
                 {/* Grid 2x3 */}
