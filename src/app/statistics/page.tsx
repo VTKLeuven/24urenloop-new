@@ -178,9 +178,9 @@ export default function Statistics() {
                         </div>
                     </div>
 
-                    {/* Last 7 Laps */}
+                    {/* Last Laps */}
                     <div className="bg-white rounded-lg shadow-md p-6 flex flex-col min-h-0">
-                        <h2 className="text-2xl font-bold mb-4">Last 7 Laps</h2>
+                        <h2 className="text-2xl font-bold mb-4">Last Laps</h2>
                         <div className="space-y-2 overflow-auto">
                             {data.last7Laps.map((lap, index) => (
                                 <RowItem
@@ -193,9 +193,9 @@ export default function Statistics() {
                         </div>
                     </div>
 
-                    {/* Quickest 7 Runners */}
+                    {/* Quickest Runners */}
                     <div className="bg-white rounded-lg shadow-md p-6 flex flex-col min-h-0">
-                        <h2 className="text-2xl font-bold mb-4">Quickest 7 Runners</h2>
+                        <h2 className="text-2xl font-bold mb-4">Quickest Runners</h2>
                         <div className="space-y-2 overflow-auto">
                             {data.quickest7Runners.map((runner, index) => (
                                 <RowItem

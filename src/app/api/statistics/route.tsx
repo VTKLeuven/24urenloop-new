@@ -82,9 +82,20 @@ export async function GET() {
 
         // Retrieve the top 7 runners with the most laps
         const top7Runners = await prisma.runner.findMany({
-            orderBy: { laps: { _count: 'desc' } },
+            where: {
+                laps: {
+                    some: {}, // at least one lap must exist
+                },
+            },
+            orderBy: {
+                laps: {
+                    _count: 'desc',
+                },
+            },
             take: 7,
-            include: { laps: true },
+            include: {
+                laps: true,
+            },
         });
 
         const top7RunnersData = top7Runners.map(runner => ({
