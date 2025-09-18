@@ -18,6 +18,7 @@ export async function GET() {
 
         // Retrieve the last 7 laps
         const last7Laps = await prisma.lap.findMany({
+            where: { NOT: { time: 'null' } },
             orderBy: { startTime: 'desc' },
             take: 7,
             include: { runner: true },
@@ -30,6 +31,7 @@ export async function GET() {
 
         // Retrieve the 7 runners with the quickest laps
         const quickest7Runners = await prisma.lap.findMany({
+            where: { NOT: { time: 'null' } },
             orderBy: { time: 'asc' },
             distinct: ['runnerId'],
             take: 7,

@@ -12,8 +12,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <AppSidebar />
                 </div>
 
-                <main className="flex-grow flex flex-col">
-                    <SidebarTrigger className="self-start"/>
+                <main className="relative flex-grow flex flex-col">
+                    <SidebarTrigger className="absolute z-10" />
                     <div className="flex-grow flex justify-center items-center">
                         {children}
                     </div>
