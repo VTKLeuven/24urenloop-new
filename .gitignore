@@ -39,4 +39,5 @@ next-env.d.ts
 #jetbrains
 /.idea
 .idea
+.env
 .idea/workspace.xml

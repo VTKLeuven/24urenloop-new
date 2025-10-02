@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Runner, Group, Faculty } from '@prisma/client';
 
 export default function Page() {
@@ -22,6 +22,14 @@ export default function Page() {
 
     const [showGroupModal, setShowGroupModal] = useState(false);
     const [newGroupName, setNewGroupName] = useState("");
+
+    // NEW: optional student-card input + loading/error states
+    const [studentCard, setStudentCard] = useState("");
+    const [filling, setFilling] = useState(false);
+    const [fillError, setFillError] = useState<string | null>(null);
+
+    // Prevent duplicate triggers for the same scanned value
+    const lastTriggeredRef = useRef<string | null>(null);
 
     useEffect(() => {
         async function fetchGroups() {
@@ -75,9 +83,9 @@ export default function Page() {
 
     const handleSearchFocus = () => setShowResults(true);
 
-    const handleRunnerClick = (runner: Runner) => {
-        setSelectedRunner(runner);
-        setSearchQuery(`${runner.firstName} ${runner.lastName}`);
+    const handleRunnerClick = (runnerItem: Runner) => {
+        setSelectedRunner(runnerItem);
+        setSearchQuery(`${runnerItem.firstName} ${runnerItem.lastName}`);
         setTimeout(() => setShowResults(false), 100);
     };
 
@@ -111,11 +119,11 @@ export default function Page() {
         }
     };
 
-    const addToQueue = async (runner: Runner) => {
+    const addToQueue = async (runnerItem: Runner) => {
         const response = await fetch("/api/add-to-queue", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ runnerId: runner.id }),
+            body: JSON.stringify({ runnerId: runnerItem.id }),
         });
         if (response.ok) {
             alert("Runner added to queue successfully!");
@@ -144,14 +152,97 @@ export default function Page() {
         }
     };
 
+    // Helper: cleaned scanned string (remove trailing newlines/whitespace)
+    const cleanScannedValue = (val: string) => val.replace(/[\r\n]+/g, "").trim();
+
+    // Core fill function that optionally accepts a scanned value (so it can be triggered from key events or effect)
+    const handleFillFromStudentCard = async (scannedValue?: string) => {
+        setFillError(null);
+        const scanned = typeof scannedValue === "string" ? cleanScannedValue(scannedValue) : cleanScannedValue(studentCard);
+
+        if (!scanned || !scanned.includes(";")) {
+            setFillError("Provide scanned string in format serial;cardAppId");
+            return;
+        }
+
+        // avoid calling twice for the same input
+        if (lastTriggeredRef.current === scanned) return;
+        lastTriggeredRef.current = scanned;
+
+        setFilling(true);
+        try {
+            const res = await fetch("/api/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ scanned }),
+            });
+
+            const json = await res.json();
+
+            if (!res.ok || json?.ok === false) {
+                const msg = json?.error ?? json?.details ?? `Request failed (status ${res.status})`;
+                setFillError(String(msg));
+            } else if (json?.ok === true && json?.data) {
+                const data = json.data as {
+                    firstName?: string;
+                    lastName?: string;
+                    userName?: string;
+                    moreUnifiedUid?: string;
+                    [k: string]: unknown;
+                };
+
+                const identificationValue = data.userName
+
+                setRunner(prev => ({
+                    ...prev,
+                    firstName: typeof data.firstName === "string" ? data.firstName : prev.firstName,
+                    lastName: typeof data.lastName === "string" ? data.lastName : prev.lastName,
+                    identification: identificationValue || prev.identification,
+                }));
+
+                // also update the input to the cleaned version (remove newline chars)
+                setStudentCard(scanned);
+            } else {
+                setFillError("Unexpected response from server");
+            }
+        } catch (err: unknown) {
+            setFillError(String(err));
+        } finally {
+            setFilling(false);
+        }
+    };
+
+    // Trigger when user presses Enter while the input is focused
+    const handleStudentCardKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            e.preventDefault(); // avoid form submits or other default behaviour
+            handleFillFromStudentCard();
+        }
+    };
+
+    // Trigger automatically if scanner injects newline chars into the input value.
+    // Some scanners paste the characters and include a newline instead of firing an Enter key event.
+    useEffect(() => {
+        if (!studentCard) return;
+
+        // if studentCard contains newline characters, trigger fill
+        if (studentCard.includes("\n") || studentCard.includes("\r")) {
+            // schedule microtask to ensure the state has the latest value
+            const t = setTimeout(() => {
+                handleFillFromStudentCard(studentCard);
+            }, 0);
+            return () => clearTimeout(t);
+        }
+    }, [studentCard]);
+
     return (
         <div className="flex flex-col justify-center items-center w-full h-full">
             <div className="bg-white rounded-lg shadow-md p-6 mx-auto max-w-lg w-full">
-                <h1 className="text-2xl font-bold mb-6">Queue Up</h1>
+                <h1 className="text-2xl font-bold mb-3">Queue Up</h1>
 
                 {/* Add existing runner */}
                 <h4 className="text-lg font-semibold mb-3">Add existing runner</h4>
-                <div className="mb-6 relative">
+                <div className="mb-3 relative">
                     <input
                         type="text"
                         placeholder="Search by First Name, Last Name, or ID"
@@ -188,6 +279,30 @@ export default function Page() {
                             Add to Queue
                         </button>
                     )}
+                </div>
+
+                {/* NEW: optional student-card scanner input */}
+                <div className="mb-3">
+                    <label className="block text-sm font-medium mb-2">Optional: Student card scanner input</label>
+                    <div className="flex space-x-2">
+                        <input
+                            type="text"
+                            placeholder="e.g. 123456789;0123456789"
+                            value={studentCard}
+                            onChange={(e) => setStudentCard(e.target.value)}
+                            onKeyDown={handleStudentCardKeyDown}
+                            className="rounded-md px-3 w-full border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => handleFillFromStudentCard()}
+                            disabled={filling}
+                            className="bg-green-600 hover:bg-green-700 text-white px-4 rounded-md font-semibold"
+                        >
+                            {filling ? "Filling..." : "Fill"}
+                        </button>
+                    </div>
+                    {fillError && <div className="mt-2 text-sm text-red-600">{fillError}</div>}
                 </div>
 
                 {/* Add new runner */}
