@@ -22,8 +22,9 @@ model Runner {
   facultyId        Int
   registrationTime DateTime @default(now())
   groupNumber      Int
-  testTime         Float?
+  testTime         String?
   firstYear        Boolean
+  shoeSize         String   @default("0")
   laps             Lap[] // Relationship to laps
   queue            Queue[]
 }

@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from "react";
-import { TvMinimalPlay, ChartNoAxesCombined, UserRoundPlus, Users, Search, SkipForward, CloudDrizzle, FileWarningIcon } from "lucide-react";
+import { TvMinimalPlay, ChartNoAxesCombined, UserRoundPlus, Users, Search, SkipForward, CloudDrizzle, FileWarningIcon, Upload } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 import {
@@ -44,6 +44,11 @@ const items = [
         title: "Query",
         url: "/query",
         icon: Search,
+    },
+    {
+        title: "Upload speedyteam",
+        url: "/upload-speedyteam",
+        icon: Upload,
     },
     {
         title: "DEV ONLY RESET",

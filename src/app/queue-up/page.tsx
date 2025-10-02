@@ -16,9 +16,10 @@ export default function Page() {
     const [groups, setGroups] = useState<Group[]>([]);
     const [faculties, setFaculties] = useState<Faculty[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<Runner[]>([]);
+    const [searchResults, setSearchResults] = useState<(Runner & { lastLapTime?: string | null })[]>([]);
     const [selectedRunner, setSelectedRunner] = useState<Runner | null>(null);
     const [showResults, setShowResults] = useState(false);
+    const [averageLapTime, setAverageLapTime] = useState<string | null>(null);
 
     const [showGroupModal, setShowGroupModal] = useState(false);
     const [newGroupName, setNewGroupName] = useState("");
@@ -44,8 +45,19 @@ export default function Page() {
             setFaculties(data);
         }
 
+        async function fetchAverageLapTime() {
+            try {
+                const response = await fetch("/api/average-lap-time");
+                const data = await response.json();
+                setAverageLapTime(data.averageTime);
+            } catch (error) {
+                console.error("Failed to fetch average lap time:", error);
+            }
+        }
+
         fetchGroups();
         fetchFaculties();
+        fetchAverageLapTime();
     }, []);
 
     useEffect(() => {
@@ -97,7 +109,7 @@ export default function Page() {
             body: JSON.stringify({
                 ...runner,
                 groupNumber: parseInt(runner.groupNumber, 10),
-                testTime: runner.testTime ? parseFloat(runner.testTime.replace(":", ".")) : null,
+                testTime: runner.testTime || null,
                 facultyId: parseInt(runner.facultyId, 10),
             }),
         });
@@ -238,7 +250,14 @@ export default function Page() {
     return (
         <div className="flex flex-col justify-center items-center w-full h-full">
             <div className="bg-white rounded-lg shadow-md p-6 mx-auto max-w-lg w-full">
-                <h1 className="text-2xl font-bold mb-3">Queue Up</h1>
+                <div className="flex justify-between items-center mb-3">
+                    <h1 className="text-2xl font-bold">Queue Up</h1>
+                    {averageLapTime && (
+                        <div className="text-sm text-gray-600">
+                            Avg lap time last hour: <span className="text-blue-600 font-mono font-semibold">{averageLapTime}</span>
+                        </div>
+                    )}
+                </div>
 
                 {/* Add existing runner */}
                 <h4 className="text-lg font-semibold mb-3">Add existing runner</h4>
@@ -261,12 +280,25 @@ export default function Page() {
                                     }`}
                                     onClick={() => handleRunnerClick(result)}
                                 >
-              <span className="font-medium">
-                {result.firstName} {result.lastName}
-              </span>{" "}
-                                    <span className="text-gray-600 text-sm">
-                ({result.identification})
-              </span>
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <span className="font-medium">
+                                                {result.firstName} {result.lastName}
+                                            </span>{" "}
+                                            <span className="text-gray-600 text-sm">
+                                                ({result.identification})
+                                            </span>
+                                        </div>
+                                        {result.lastLapTime ? (
+                                            <span className="text-sm text-blue-600 font-mono">
+                                                Last lap: {result.lastLapTime}
+                                            </span>
+                                        ) : result.testTime ? (
+                                            <span className="text-sm text-red-600 font-mono">
+                                                Test time: {result.testTime}
+                                            </span>
+                                        ) : null}
+                                    </div>
                                 </li>
                             ))}
                         </ul>
