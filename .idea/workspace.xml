@@ -5,9 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="52a50b5c-d5a5-4b84-b9f2-737f162130e6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/api/verify/route.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/test/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/queue-up/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/queue-up/page.tsx" afterDir="false" />
     </list>
@@ -134,7 +131,7 @@
       <workItem from="1758216107427" duration="3791000" />
       <workItem from="1758634070254" duration="3000" />
       <workItem from="1758904436675" duration="34000" />
-      <workItem from="1759417625103" duration="5813000" />
+      <workItem from="1759417625103" duration="6321000" />
     </task>
     <servers />
   </component>

@@ -238,11 +238,11 @@ export default function Page() {
     return (
         <div className="flex flex-col justify-center items-center w-full h-full">
             <div className="bg-white rounded-lg shadow-md p-6 mx-auto max-w-lg w-full">
-                <h1 className="text-2xl font-bold mb-6">Queue Up</h1>
+                <h1 className="text-2xl font-bold mb-3">Queue Up</h1>
 
                 {/* Add existing runner */}
                 <h4 className="text-lg font-semibold mb-3">Add existing runner</h4>
-                <div className="mb-6 relative">
+                <div className="mb-3 relative">
                     <input
                         type="text"
                         placeholder="Search by First Name, Last Name, or ID"
@@ -282,8 +282,8 @@ export default function Page() {
                 </div>
 
                 {/* NEW: optional student-card scanner input */}
-                <div className="mb-6">
-                    <label className="block text-sm font-medium mb-2">Optional: Student card scanner input (serial;cardAppId)</label>
+                <div className="mb-3">
+                    <label className="block text-sm font-medium mb-2">Optional: Student card scanner input</label>
                     <div className="flex space-x-2">
                         <input
                             type="text"
