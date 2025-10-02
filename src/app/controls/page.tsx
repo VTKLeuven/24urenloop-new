@@ -12,8 +12,8 @@ export default function ControlsPage() {
     const [currentRunner, setCurrentRunner] = useState<RunnerWithLaps | null>(null);
     const [nextRunner, setNextRunner] = useState<RunnerWithLaps | null>(null);
     const [timer, setTimer] = useState(0);
+    const [cooldownActive, setCooldownActive] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
-
 
     async function fetchData() {
         try {
@@ -65,6 +65,8 @@ export default function ControlsPage() {
     }, [currentRunner]);
 
     const handleStartNextRunner = async () => {
+        setCooldownActive(true);
+
         await fetch('/api/start-next-runner', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -72,6 +74,10 @@ export default function ControlsPage() {
 
         await fetchData();
         setTimer(0);
+
+        setTimeout(() => {
+            setCooldownActive(false);
+        }, 3000);
     };
 
     const handleUndo = async () => {
@@ -141,12 +147,11 @@ export default function ControlsPage() {
                 <div className="flex items-stretch gap-3">
                     <Button
                         onClick={handleStartNextRunner}
-                        disabled={!nextRunner}
-                        // primary
+                        disabled={!nextRunner || cooldownActive}
                         variant="default"
                         className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Start Next Runner
+                        {cooldownActive ? "Processing..." : "Start Next Runner"}
                     </Button>
 
                     <Button
