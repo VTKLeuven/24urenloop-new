@@ -1,0 +1,142 @@
+"use client"
+
+import React, { useEffect, useState } from "react";
+
+type Runner = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  identification: string;
+  reward1Collected: boolean;
+  reward2Collected: boolean;
+  reward3Collected: boolean;
+};
+
+function getErrorMessage(err: unknown) {
+  if (err instanceof Error) return err.message;
+  try {
+    return String(err);
+  } catch {
+    return 'Unknown error';
+  }
+}
+
+export default function RunnerRewardsPage() {
+  const [runners, setRunners] = useState<Runner[]>([]);
+  const [loadingIds, setLoadingIds] = useState<Record<number, boolean>>({});
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchRunners();
+  }, []);
+
+  async function fetchRunners() {
+    try {
+      const res = await fetch("/api/runner-rewards");
+      if (!res.ok) throw new Error("Failed to fetch runners");
+      const data = await res.json();
+      // Ensure the list is sorted by lastName on the client as well
+      const sorted = (data as Runner[]).slice().sort((a, b) => a.lastName.localeCompare(b.lastName));
+      setRunners(sorted);
+    } catch (err: unknown) {
+      console.error(err);
+      setError(getErrorMessage(err));
+    }
+  }
+
+  async function toggleReward(id: number, field: string, value: boolean) {
+    setLoadingIds((s) => ({ ...s, [id]: true }));
+    setError(null);
+
+    try {
+      const res = await fetch("/api/runner-rewards", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, field, value }),
+      });
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({} as Record<string, unknown>));
+        const errMsg =
+          typeof json === 'object' && json !== null && 'error' in json && typeof (json as Record<string, unknown>)['error'] === 'string'
+            ? (json as Record<string, unknown>)['error'] as string
+            : "Failed to update reward";
+        throw new Error(errMsg);
+      }
+
+      const updated = await res.json();
+      setRunners((list) =>
+        list.map((r) => (r.id === updated.id ? { ...r, ...updated } : r))
+      );
+    } catch (err: unknown) {
+      console.error(err);
+      setError(getErrorMessage(err));
+    } finally {
+      setLoadingIds((s) => ({ ...s, [id]: false }));
+    }
+  }
+
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-semibold mb-4">Runner Rewards</h1>
+
+      {error ? (
+        <div className="mb-4 text-red-600">Error: {error}</div>
+      ) : null}
+
+      <div className="overflow-auto bg-card border rounded-md">
+        <table className="min-w-full table-auto">
+          <thead>
+            <tr className="bg-muted text-left">
+              <th className="px-4 py-2">Last name</th>
+              <th className="px-4 py-2">First name</th>
+              <th className="px-4 py-2">Identification</th>
+              <th className="px-4 py-2">Reward 2 rounds</th>
+              <th className="px-4 py-2">Reward 4 rounds</th>
+              <th className="px-4 py-2">Reward 6 rounds</th>
+            </tr>
+          </thead>
+          <tbody>
+            {runners.map((runner) => (
+              <tr key={runner.id} className="border-t">
+                <td className="px-4 py-2">{runner.lastName}</td>
+                <td className="px-4 py-2">{runner.firstName}</td>
+                <td className="px-4 py-2">{runner.identification}</td>
+                <td className="px-4 py-2">
+                  <input
+                    type="checkbox"
+                    checked={runner.reward1Collected}
+                    disabled={loadingIds[runner.id]}
+                    onChange={(e) =>
+                      toggleReward(runner.id, "reward1Collected", e.target.checked)
+                    }
+                  />
+                </td>
+                <td className="px-4 py-2">
+                  <input
+                    type="checkbox"
+                    checked={runner.reward2Collected}
+                    disabled={loadingIds[runner.id]}
+                    onChange={(e) =>
+                      toggleReward(runner.id, "reward2Collected", e.target.checked)
+                    }
+                  />
+                </td>
+                <td className="px-4 py-2">
+                  <input
+                    type="checkbox"
+                    checked={runner.reward3Collected}
+                    disabled={loadingIds[runner.id]}
+                    onChange={(e) =>
+                      toggleReward(runner.id, "reward3Collected", e.target.checked)
+                    }
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

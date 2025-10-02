@@ -27,6 +27,9 @@ model Runner {
   shoeSize         String   @default("0")
   laps             Lap[] // Relationship to laps
   queue            Queue[]
+  reward1Collected Boolean  @default(false)
+  reward2Collected Boolean  @default(false)
+  reward3Collected Boolean  @default(false)
 }
 
 model Group {

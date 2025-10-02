@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from "react";
-import { TvMinimalPlay, ChartNoAxesCombined, UserRoundPlus, Users, Search, SkipForward, CloudDrizzle, FileWarningIcon, Upload } from "lucide-react";
+import { TvMinimalPlay, ChartNoAxesCombined, UserRoundPlus, Users, Search, SkipForward, CloudDrizzle, FileWarningIcon, Upload, Gift } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 import {
@@ -49,6 +49,11 @@ const items = [
         title: "Upload speedyteam",
         url: "/upload-speedyteam",
         icon: Upload,
+    },
+    {
+        title: "Runner Rewards",
+        url: "/runner-rewards",
+        icon: Gift,
     },
     {
         title: "DEV ONLY RESET",

@@ -5,13 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="52a50b5c-d5a5-4b84-b9f2-737f162130e6" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/app/api/runner-rewards/route.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/runner-rewards/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/prisma/schema.prisma" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/search/route.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/search/route.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/queue-up/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/queue-up/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/test/page.tsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/app-sidebar.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -65,7 +62,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/Users/d1ff1cult/Documents/VTK/IT/24UL/24urenloop/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
@@ -137,7 +134,8 @@
       <workItem from="1758216107427" duration="3791000" />
       <workItem from="1758634070254" duration="3000" />
       <workItem from="1758904436675" duration="34000" />
-      <workItem from="1759417625103" duration="12911000" />
+      <workItem from="1759417625103" duration="14700000" />
+      <workItem from="1759437075341" duration="1015000" />
     </task>
     <servers />
   </component>
