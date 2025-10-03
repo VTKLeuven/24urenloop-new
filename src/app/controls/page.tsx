@@ -51,7 +51,7 @@ export default function ControlsPage() {
 
     useEffect(() => {
         if (currentRunner && currentRunner.laps && currentRunner.laps.length > 0) {
-            const mostRecentLap = currentRunner.laps[0];
+            const mostRecentLap = currentRunner.laps[currentRunner.laps.length - 1];
             timerRef.current = setInterval(() => {
                 setTimer(Date.now() - new Date(mostRecentLap.startTime).getTime());
             }, 10);
