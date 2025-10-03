@@ -51,42 +51,40 @@ export default function LiveRunners() {
     const previousRunner = data.last7Laps.length > 0 ? data.last7Laps[0] : { name: 'none', time: 0 };
     const nextRunner = data.currentQueue.length > 0 ? data.currentQueue[0] : { name: 'none' };
 
+    const currentRunnerTotalSeconds = Math.floor(data.currentRunner.time! / 1000);
+    const currentRunnerMinutes = Math.floor(currentRunnerTotalSeconds / 60);
+    const currentRunnerSeconds = currentRunnerTotalSeconds % 60;
+
+    const previousRunnerTotal = previousRunner.time;
+
     return (
-        <div className="h-full w-full flex flex-col gap-6">
+        <div className="h-full w-full flex flex-col items-center gap-4">
             {/* Previous Runner */}
-            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-500 flex flex-col items-center justify-center">
-                <h2 className="text-xl font-semibold text-blue-600 mb-2">Previous Runner</h2>
-                <p className="text-gray-700 text-lg">
-                    <span className="font-medium">Name:</span> {previousRunner.name}
-                </p>
-                <p className="text-gray-700 text-lg">
-                    <span className="font-medium">Time:</span>{" "}
-                    {isNaN(previousRunner.time)
-                        ? "—"
-                        : (previousRunner.time / 100).toFixed(2) + "s"}
+            <div className="w-2/5 bg-white rounded-lg shadow-md p-8 border-t-4 border-blue-500 flex flex-col items-center">
+                <h2 className="text-lg font-semibold text-blue-600 mb-2">Previous Runner</h2>
+                <p className="text-gray-700 text-base">{previousRunner.name}</p>
+                <p className="text-gray-700 text-base">
+                    {`${previousRunnerTotal.toString().padStart(2, "0")}`}
                 </p>
             </div>
 
             {/* Current Runner */}
-            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-600 flex flex-col items-center justify-center">
-                <h2 className="text-xl font-semibold text-blue-600 mb-2">Current Runner</h2>
-                <p className="text-gray-700 text-lg">
-                    <span className="font-medium">Name:</span>{" "}
+            <div className="w-3/4 bg-white rounded-lg shadow-lg p-16 border-t-4 border-blue-600 flex flex-col items-center">
+                <h1 className="text-3xl font-bold text-blue-600 mb-4">Current Runner</h1>
+                <p className="text-gray-700 text-2xl font-semibold">
                     {data.currentRunner.name || "none"}
                 </p>
-                <p className="text-gray-700 text-lg">
-                    <span className="font-medium">Time:</span>{" "}
-                    {(data.currentRunner.time! / 1000).toFixed(2)}s
+                <p className="text-gray-700 text-2xl font-semibold">
+                    {`${currentRunnerMinutes.toString().padStart(2, "0")}:${currentRunnerSeconds.toString().padStart(2, "0")}`}
                 </p>
             </div>
 
             {/* Next Runner */}
-            <div className="flex-grow bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-500 flex flex-col items-center justify-center">
-                <h2 className="text-xl font-semibold text-blue-600 mb-2">Next Runner</h2>
-                <p className="text-gray-700 text-lg">
-                    <span className="font-medium">Name:</span> {nextRunner.name}
-                </p>
+            <div className="w-2/5 bg-white rounded-lg shadow-md p-8 border-t-4 border-blue-500 flex flex-col items-center">
+                <h2 className="text-lg font-semibold text-blue-600 mb-2">Next Runner</h2>
+                <p className="text-gray-700 text-base">{nextRunner.name}</p>
             </div>
         </div>
+
     );
 }
