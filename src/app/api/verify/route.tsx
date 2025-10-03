@@ -1,4 +1,4 @@
-// src/app/api/verify/route.ts
+// src/app/api/verify/route.tsx
 import { NextResponse } from "next/server";
 
 const DEFAULT_AUTH_ENDPOINT =

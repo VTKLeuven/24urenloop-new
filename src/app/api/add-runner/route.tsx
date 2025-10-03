@@ -1,4 +1,4 @@
-// app/api/add-runner/route.ts
+// app/api/add-runner/route.tsx
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 

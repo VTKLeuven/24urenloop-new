@@ -30,10 +30,15 @@ export async function GET() {
             })
             : null;
 
-        const nextRunnerInQueue = await prisma.queue.findFirst({
+        // Fetch the queue with the first two entries
+        const queueEntries = await prisma.queue.findMany({
             orderBy: { queuePlace: 'asc' },
             include: { runner: { include: { laps: true } } },
+            take: 2
         });
+
+        const nextRunnerInQueue = queueEntries.length > 0 ? queueEntries[0] : null;
+        const secondNextRunnerInQueue = queueEntries.length > 1 ? queueEntries[1] : null;
 
         const globalState = await prisma.globalState.findUnique({
             where: { id: 1 },
@@ -42,13 +47,14 @@ export async function GET() {
         return NextResponse.json({
             previousRunner: previousRunner ? {
                 ...previousRunner,
-                lapTime: previousRunner.laps?.[0]?.time, // Ensuring laps is accessed as an array
+                lapTime: previousRunner.laps?.[0]?.time,
             } : null,
             currentRunner: currentRunner ? {
                 ...currentRunner,
-                startTime: currentRunner.laps?.[0]?.startTime, // Same fix
+                startTime: currentRunner.laps?.[0]?.startTime,
             } : null,
             nextRunner: nextRunnerInQueue ? nextRunnerInQueue.runner : null,
+            secondNextRunner: secondNextRunnerInQueue ? secondNextRunnerInQueue.runner : null,
             raining: globalState?.raining || false,
         });
     } catch (error) {

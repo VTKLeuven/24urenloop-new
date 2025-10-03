@@ -139,6 +139,9 @@ export default function Page() {
         });
         if (response.ok) {
             alert("Runner added to queue successfully!");
+            setSearchQuery("");
+            setSelectedRunner(null);
+            setSearchResults([]);
         } else {
             alert("Failed to add runner to queue.");
         }

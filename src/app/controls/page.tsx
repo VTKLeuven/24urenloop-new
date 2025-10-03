@@ -11,6 +11,7 @@ export default function ControlsPage() {
     const [previousRunner, setPreviousRunner] = useState<RunnerWithLaps & { lapTime?: number } | null>(null);
     const [currentRunner, setCurrentRunner] = useState<RunnerWithLaps | null>(null);
     const [nextRunner, setNextRunner] = useState<RunnerWithLaps | null>(null);
+    const [secondNextRunner, setSecondNextRunner] = useState<RunnerWithLaps | null>(null);
     const [timer, setTimer] = useState(0);
     const [cooldownActive, setCooldownActive] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -34,6 +35,7 @@ export default function ControlsPage() {
             setPreviousRunner(data.previousRunner);
             setCurrentRunner(data.currentRunner || null);
             setNextRunner(data.nextRunner);
+            setSecondNextRunner(data.secondNextRunner || null);
         } catch (error) {
             console.error('Failed to fetch data:', error);
         }
@@ -68,6 +70,22 @@ export default function ControlsPage() {
         setCooldownActive(true);
 
         await fetch('/api/start-next-runner', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        await fetchData();
+        setTimer(0);
+
+        setTimeout(() => {
+            setCooldownActive(false);
+        }, 3000);
+    };
+
+    const handleSkipNextRunner = async () => {
+        setCooldownActive(true);
+
+        await fetch('/api/skip-next-runner', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -118,20 +136,20 @@ export default function ControlsPage() {
                     )}
                 </div>
 
-                {/* Current Runner */}
-                <div className="mb-6">
-                    <h2 className="text-lg font-semibold mb-1">Current Runner</h2>
+                {/* Current Runner - More prominent */}
+                <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                    <h2 className="text-xl font-bold mb-2 text-blue-700">Current Runner</h2>
                     {currentRunner ? (
-                        <div className="text-gray-800 text-sm space-y-1">
-                            <p><span className="font-medium">Name:</span> {currentRunner.firstName} {currentRunner.lastName}</p>
-                            <p><span className="font-medium">Timer:</span> {formatTime(timer)}</p>
+                        <div className="text-gray-800 space-y-2">
+                            <p className="text-lg font-semibold">{currentRunner.firstName} {currentRunner.lastName}</p>
+                            <p className="text-2xl font-bold">{formatTime(timer)}</p>
                         </div>
                     ) : (
                         <p className="text-gray-500 italic">No current runner</p>
                     )}
                 </div>
 
-                {/* Next Runner */}
+                {/* Next Runners */}
                 <div className="mb-6">
                     <h2 className="text-lg font-semibold mb-1">Next Runner</h2>
                     {nextRunner ? (
@@ -143,25 +161,47 @@ export default function ControlsPage() {
                     )}
                 </div>
 
+                {/* Second Next Runner */}
+                <div className="mb-6">
+                    <h2 className="text-lg font-semibold mb-1">Second Next Runner</h2>
+                    {secondNextRunner ? (
+                        <div className="text-gray-800 text-sm space-y-1">
+                            <p><span className="font-medium">Name:</span> {secondNextRunner.firstName} {secondNextRunner.lastName}</p>
+                        </div>
+                    ) : (
+                        <p className="text-gray-500 italic">No second next runner</p>
+                    )}
+                </div>
+
                 {/* Action buttons (stacked) */}
-                <div className="flex items-stretch gap-3">
-                    <Button
-                        onClick={handleStartNextRunner}
-                        disabled={!nextRunner || cooldownActive}
-                        variant="default"
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {cooldownActive ? "Processing..." : "Start Next Runner"}
-                    </Button>
+                <div className="flex flex-col gap-3">
+                    <div className="flex items-stretch gap-3">
+                        <Button
+                            onClick={handleStartNextRunner}
+                            disabled={!nextRunner || cooldownActive}
+                            variant="default"
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {cooldownActive ? "Processing..." : "Start Next Runner"}
+                        </Button>
+
+                        <Button
+                            onClick={handleUndo}
+                            disabled={!previousRunner || !currentRunner}
+                            variant="outline"
+                            className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Undo
+                        </Button>
+                    </div>
 
                     <Button
-                        onClick={handleUndo}
-                        disabled={!previousRunner || !currentRunner}
-                        // outlined secondary (no black)
-                        variant="outline"
-                        className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={handleSkipNextRunner}
+                        disabled={!nextRunner || !secondNextRunner || cooldownActive}
+                        variant="destructive"
+                        className="w-full text-white font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Undo
+                        {"Skip Next Runner"}
                     </Button>
                 </div>
             </div>

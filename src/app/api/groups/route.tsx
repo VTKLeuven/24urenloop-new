@@ -1,4 +1,4 @@
-// app/api/groups/route.ts
+// app/api/groups/route.tsx
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
