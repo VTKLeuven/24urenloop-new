@@ -19,8 +19,29 @@ export async function GET(req: NextRequest) {
                     ],
                 })),
             },
+            include: {
+                laps: {
+                    where: {
+                        NOT: {
+                            time: 'null',
+                        },
+                    },
+                    orderBy: {
+                        startTime: 'desc',
+                    },
+                    take: 1,
+                },
+            },
         });
-        return NextResponse.json(runners);
+
+        // Transform the data to include lastLapTime
+        const runnersWithLastLap = runners.map(runner => ({
+            ...runner,
+            lastLapTime: runner.laps.length > 0 ? runner.laps[0].time : null,
+            laps: undefined, // Remove the laps array from the response
+        }));
+
+        return NextResponse.json(runnersWithLastLap);
     } catch {
         return NextResponse.json({ error: 'Failed to fetch search results' }, { status: 500 });
     }

@@ -22,10 +22,14 @@ model Runner {
   facultyId        Int
   registrationTime DateTime @default(now())
   groupNumber      Int
-  testTime         Float?
+  testTime         String?
   firstYear        Boolean
+  shoeSize         String   @default("0")
   laps             Lap[] // Relationship to laps
   queue            Queue[]
+  reward1Collected Boolean  @default(false)
+  reward2Collected Boolean  @default(false)
+  reward3Collected Boolean  @default(false)
 }
 
 model Group {
