@@ -113,6 +113,14 @@ export default function Statistics() {
     const [target, setTarget] = useState<Date>(() => getNextDayTarget());
     const [countdown, setCountdown] = useState<string>('');
 
+    function formatRunTime(ms: number): string {
+        const total = Math.max(0, ms);
+        const minutes = Math.floor(total / 60000);
+        const seconds = Math.floor((total % 60000) / 1000);
+        const centis = Math.floor((total % 1000) / 10); // two digits
+        return `${minutes}:${String(seconds).padStart(2, '0')}:${String(centis).padStart(2, '0')}`;
+    }
+
     useEffect(() => {
         async function fetchData() {
             const response = await fetch('/api/statistics');
@@ -156,7 +164,7 @@ export default function Statistics() {
     const currentName = data.currentRunner?.name || 'none';
     const currentTimeDisplay =
         typeof data.currentRunner?.time === 'number'
-            ? `${(data.currentRunner.time / 1000).toFixed(2)}s`
+            ? formatRunTime(data.currentRunner.time)
             : '';
 
     return (
@@ -171,10 +179,18 @@ export default function Statistics() {
                 {/* Grid 2x3 */}
                 <div className="grid grid-cols-3 grid-rows-2 gap-6 flex-1 overflow-hidden">
                     {/* Current Runner */}
-                    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col min-h-0">
-                        <h2 className="text-2xl font-bold mb-4">Current Runner</h2>
-                        <div className="space-y-2 overflow-auto">
-                            <RowItem left={currentName} right={<span>{currentTimeDisplay}</span>} highlight />
+                    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col min-h-0 relative">
+                        <div aria-hidden className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-50/60 via-transparent to-blue-100/70" />
+                        <h2 className="text-2xl font-bold mb-4 relative">Current Runner</h2>
+                        <div className="flex-1 flex items-center justify-center relative">
+                            <div className="text-center space-y-4">
+                                <div className="text-5xl font-extrabold tracking-tight text-blue-600">
+                                    {currentName || 'Waiting'}
+                                </div>
+                                <div className="text-4xl font-mono font-semibold tabular-nums text-gray-800">
+                                    {currentTimeDisplay}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
