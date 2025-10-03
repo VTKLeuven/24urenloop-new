@@ -28,7 +28,7 @@ export default function ControlsPage() {
             const data = await response.json();
 
             if (data.previousRunner) {
-                data.previousRunner.lapTime = data.previousRunner.laps[0]?.time;
+                data.previousRunner.lapTime = data.previousRunner.laps[data.previousRunner.laps.length - 1]?.time;
             }
             console.log(data)
             setPreviousRunner(data.previousRunner);
