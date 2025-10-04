@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
+import Image from "next/image";
 
 interface Runner {
     name: string;
@@ -19,6 +20,8 @@ interface QueueEntry {
 interface StatisticsData {
     currentRunner: Runner;
     last7Laps: Lap[];
+    quickest7Runners: QueueEntry[];
+    top7Runners: QueueEntry[];
     currentQueue: QueueEntry[];
 }
 
@@ -26,6 +29,8 @@ export default function LiveRunners() {
     const [data, setData] = useState<StatisticsData>({
         currentRunner: { name: '', startTime: null, time: 0 },
         last7Laps: [],
+        quickest7Runners: [],
+        top7Runners: [],
         currentQueue: []
     });
 
@@ -55,6 +60,35 @@ export default function LiveRunners() {
     const currentRunnerMinutes = Math.floor(currentRunnerTotalSeconds / 60);
     const currentRunnerSeconds = currentRunnerTotalSeconds % 60;
 
+    //TODO add other jerseys (now only green and yellow jersey)
+    let nextRunnerInfo = "";
+    if (data.currentQueue[0]?.name == data.quickest7Runners[0]?.name){
+        nextRunnerInfo = "quickestRunner";
+    } else if (data.currentQueue[0]?.name == data.top7Runners[0]?.name){
+        nextRunnerInfo = "topRunner";
+    } else {
+        nextRunnerInfo = "";
+    }
+
+    //TODO add other jerseys (now only green and yellow jersey)
+    let currentRunnerInfo = "";
+    if (data.currentRunner.name == data.quickest7Runners[0]?.name){
+        currentRunnerInfo = "quickestRunner";
+    } else if (data.currentRunner.name == data.top7Runners[0]?.name){
+        currentRunnerInfo = "topRunner";
+    } else {
+        currentRunnerInfo = "";
+    }
+
+    let previousRunnerInfo = "";
+    if (previousRunner.name == data.quickest7Runners[0]?.name){
+        previousRunnerInfo = "quickestRunner";
+    } else if (previousRunner.name == data.top7Runners[0]?.name){
+        previousRunnerInfo = "topRunner";
+    } else {
+        previousRunnerInfo = "";
+    }
+
     const previousRunnerTotal = previousRunner.time;
 
     return (
@@ -65,6 +99,37 @@ export default function LiveRunners() {
                 <p className="text-gray-700 text-base">{previousRunner.name}</p>
                 <p className="text-gray-700 text-base">
                     {`${previousRunnerTotal.toString().padStart(2, "0")}`}
+                </p>
+                <p className="text-gray-700 text-base mb-4">
+                    {previousRunnerInfo === "topRunner" && (
+                        <Image
+                            src="/images/YellowShirt.png"
+                            alt="Yellow jersey"
+                            width={256}
+                            height={256}
+                            className="rounded-full object-cover"
+                        />
+                    )}
+
+                    {previousRunnerInfo === "quickestRunner" && (
+                        <Image
+                            src="/images/GreenShirt.png"
+                            alt="Green jersey"
+                            width={256}
+                            height={256}
+                            className="rounded-full object-cover"
+                        />
+                    )}
+
+                    {previousRunnerInfo === "" && (
+                        <Image
+                            src="/images/VTKShirt.png"
+                            alt="VTK jersey"
+                            width={256}
+                            height={256}
+                            className="rounded-full object-cover"
+                        />
+                    )}
                 </p>
             </div>
 
@@ -77,12 +142,77 @@ export default function LiveRunners() {
                 <p className="text-gray-700 text-2xl font-semibold">
                     {`${currentRunnerMinutes.toString().padStart(2, "0")}:${currentRunnerSeconds.toString().padStart(2, "0")}`}
                 </p>
+                <p className="text-gray-700 text-base mb-4">
+                    {currentRunnerInfo === "topRunner" && (
+                        <Image
+                            src="/images/YellowShirt.png"
+                            alt="Yellow jersey"
+                            width={256}
+                            height={256}
+                            className="rounded-full object-cover"
+                        />
+                    )}
+
+                    {currentRunnerInfo === "quickestRunner" && (
+                        <Image
+                            src="/images/GreenShirt.png"
+                            alt="Green jersey"
+                            width={256}
+                            height={256}
+                            className="rounded-full object-cover"
+                        />
+                    )}
+
+                    {currentRunnerInfo === "" && (
+                        <Image
+                            src="/images/VTKShirt.png"
+                            alt="VTK jersey"
+                            width={256}
+                            height={256}
+                            className="rounded-full object-cover"
+                        />
+                    )}
+                </p>
             </div>
 
             {/* Next Runner */}
-            <div className="w-2/5 bg-white rounded-lg shadow-md p-8 border-t-4 border-blue-500 flex flex-col items-center">
-                <h2 className="text-lg font-semibold text-blue-600 mb-2">Next Runner</h2>
-                <p className="text-gray-700 text-base">{nextRunner.name}</p>
+            <div className="w-2/5 bg-white rounded-lg shadow-md p-8 border-t-4 border-blue-500 flex items-center gap-4">
+                {/* Runner Image */}
+                {nextRunnerInfo === "topRunner" && (
+                    <Image
+                        src="/images/YellowShirt.png"
+                        alt="Yellow jersey"
+                        width={256}
+                        height={256}
+                        className="rounded-full object-cover"
+                    />
+                )}
+
+                {nextRunnerInfo === "quickestRunner" && (
+                    <Image
+                        src="/images/GreenShirt.png"
+                        alt="Green jersey"
+                        width={256}
+                        height={256}
+                        className="rounded-full object-cover"
+                    />
+                )}
+
+                {nextRunnerInfo === "" && (
+                    <Image
+                        src="/images/VTKShirt.png"
+                        alt="VTK jersey"
+                        width={256}
+                        height={256}
+                        className="rounded-full object-cover"
+                    />
+                )}
+
+                {/* Runner Name */}
+                <div className="flex flex-col">
+                    <h2 className="text-lg font-semibold text-blue-600">Next Runner</h2>
+                    <p className="text-gray-700 text-base">{nextRunner.name || "none"}</p>
+                </div>
             </div>
         </div>
 
