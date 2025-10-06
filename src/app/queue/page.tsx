@@ -78,10 +78,14 @@ export default function QueuePage() {
         return shoeSize.toString();
     }
 
-    function rightTime(time: string|null): string {
+    function rightTime(time: string | null): string {
         if (time === null) return "00:00";
-        const res = time.padStart(5, '0');
-        if (res[3] !== ':') return res.slice(0, 2) + ':' + res.slice(3);
+        let res = time;
+        res = res.replace('.', ':');
+        while (res[res.length - 3] !== ':') {
+            res = res + '0';
+        }
+        res = res.padStart(5, '0');
         return res;
     }
 
