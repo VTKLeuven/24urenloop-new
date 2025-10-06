@@ -6,15 +6,18 @@ interface Runner {
     name: string;
     startTime: string | null;
     time?: number;
+    facultyId: number;
 }
 
 interface Lap {
     name: string;
     time: number;
+    facultyId: number;
 }
 
 interface QueueEntry {
     name: string;
+    facultyId: number;
 }
 
 interface StatisticsData {
@@ -27,7 +30,7 @@ interface StatisticsData {
 
 export default function LiveRunners() {
     const [data, setData] = useState<StatisticsData>({
-        currentRunner: { name: '', startTime: null, time: 0 },
+        currentRunner: { name: '', startTime: null, time: 0, facultyId: 0},
         last7Laps: [],
         quickest7Runners: [],
         top7Runners: [],
@@ -53,38 +56,45 @@ export default function LiveRunners() {
         return () => clearInterval(timer);
     }, []);
 
-    const previousRunner = data.last7Laps.length > 0 ? data.last7Laps[0] : { name: 'none', time: 0 };
-    const nextRunner = data.currentQueue.length > 0 ? data.currentQueue[0] : { name: 'none' };
+    const previousRunner = data.last7Laps.length > 0 ? data.last7Laps[0] : { name: 'none', time: 0, facultyId: 0 };
+    const nextRunner = data.currentQueue.length > 0 ? data.currentQueue[0] : { name: 'none', facultyId: 0 };
 
     const currentRunnerTotalSeconds = Math.floor(data.currentRunner.time! / 1000);
     const currentRunnerMinutes = Math.floor(currentRunnerTotalSeconds / 60);
     const currentRunnerSeconds = currentRunnerTotalSeconds % 60;
 
-    //TODO add other jerseys (now only green and yellow jersey)
+    //TODO add other jerseys (now only green and yellow jersey and Gent)
     let nextRunnerInfo = "";
-    if (data.currentQueue[0]?.name == data.quickest7Runners[0]?.name){
+    if (nextRunner.name == data.quickest7Runners[0]?.name){
         nextRunnerInfo = "quickestRunner";
-    } else if (data.currentQueue[0]?.name == data.top7Runners[0]?.name){
+    } else if (nextRunner.name == data.top7Runners[0]?.name){
         nextRunnerInfo = "topRunner";
+    } else if (nextRunner.facultyId == 3){
+        nextRunnerInfo = "GentRunner";
     } else {
         nextRunnerInfo = "";
     }
 
-    //TODO add other jerseys (now only green and yellow jersey)
+    //TODO add other jerseys (now only green and yellow jersey and Gent)
     let currentRunnerInfo = "";
     if (data.currentRunner.name == data.quickest7Runners[0]?.name){
         currentRunnerInfo = "quickestRunner";
     } else if (data.currentRunner.name == data.top7Runners[0]?.name){
         currentRunnerInfo = "topRunner";
+    } else if (data.currentRunner.facultyId == 3){
+        currentRunnerInfo = "GentRunner";
     } else {
         currentRunnerInfo = "";
     }
 
+    //TODO add other jerseys (now only green and yellow jersey and Gent)
     let previousRunnerInfo = "";
     if (previousRunner.name == data.quickest7Runners[0]?.name){
         previousRunnerInfo = "quickestRunner";
     } else if (previousRunner.name == data.top7Runners[0]?.name){
         previousRunnerInfo = "topRunner";
+    } else if (previousRunner.facultyId == 3){
+        previousRunnerInfo = "GentRunner";
     } else {
         previousRunnerInfo = "";
     }
@@ -105,8 +115,8 @@ export default function LiveRunners() {
                         <Image
                             src="/images/YellowShirt.png"
                             alt="Yellow jersey"
-                            width={256}
-                            height={256}
+                            width={128}
+                            height={128}
                             className="rounded-full object-cover"
                         />
                     )}
@@ -115,8 +125,18 @@ export default function LiveRunners() {
                         <Image
                             src="/images/GreenShirt.png"
                             alt="Green jersey"
-                            width={256}
-                            height={256}
+                            width={128}
+                            height={128}
+                            className="rounded-full object-cover"
+                        />
+                    )}
+
+                    {previousRunnerInfo === "GentRunner" && (
+                        <Image
+                            src="/images/GentShirt.png"
+                            alt="VTK jersey"
+                            width={128}
+                            height={128}
                             className="rounded-full object-cover"
                         />
                     )}
@@ -125,8 +145,8 @@ export default function LiveRunners() {
                         <Image
                             src="/images/VTKShirt.png"
                             alt="VTK jersey"
-                            width={256}
-                            height={256}
+                            width={128}
+                            height={128}
                             className="rounded-full object-cover"
                         />
                     )}
@@ -163,6 +183,16 @@ export default function LiveRunners() {
                         />
                     )}
 
+                    {currentRunnerInfo === "GentRunner" && (
+                        <Image
+                            src="/images/GentShirt.png"
+                            alt="VTK jersey"
+                            width={256}
+                            height={256}
+                            className="rounded-full object-cover"
+                        />
+                    )}
+
                     {currentRunnerInfo === "" && (
                         <Image
                             src="/images/VTKShirt.png"
@@ -182,8 +212,8 @@ export default function LiveRunners() {
                     <Image
                         src="/images/YellowShirt.png"
                         alt="Yellow jersey"
-                        width={256}
-                        height={256}
+                        width={128}
+                        height={128}
                         className="rounded-full object-cover"
                     />
                 )}
@@ -192,8 +222,18 @@ export default function LiveRunners() {
                     <Image
                         src="/images/GreenShirt.png"
                         alt="Green jersey"
-                        width={256}
-                        height={256}
+                        width={128}
+                        height={128}
+                        className="rounded-full object-cover"
+                    />
+                )}
+
+                {nextRunnerInfo === "GentRunner" && (
+                    <Image
+                        src="/images/GentShirt.png"
+                        alt="VTK jersey"
+                        width={128}
+                        height={128}
                         className="rounded-full object-cover"
                     />
                 )}
@@ -202,8 +242,8 @@ export default function LiveRunners() {
                     <Image
                         src="/images/VTKShirt.png"
                         alt="VTK jersey"
-                        width={256}
-                        height={256}
+                        width={128}
+                        height={128}
                         className="rounded-full object-cover"
                     />
                 )}

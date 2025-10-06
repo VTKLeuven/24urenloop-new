@@ -32,6 +32,10 @@ export default function Page() {
     // Prevent duplicate triggers for the same scanned value
     const lastTriggeredRef = useRef<string | null>(null);
 
+    // R-number field non-required for VTK Gent, only two IDs: 1 for KUL and 3 for UGent
+    // Generates a identifier based on the time
+    const isIdentificationRequired = Number(runner.facultyId) === 1;
+
     useEffect(() => {
         async function fetchGroups() {
             const response = await fetch("/api/groups");
@@ -361,15 +365,6 @@ export default function Page() {
                         required
                         className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
-                    <input
-                        type="text"
-                        name="identification"
-                        placeholder="Identification Number"
-                        value={runner.identification}
-                        onChange={handleChange}
-                        required
-                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    />
                     <select
                         name="facultyId"
                         value={runner.facultyId}
@@ -386,7 +381,16 @@ export default function Page() {
                             </option>
                         ))}
                     </select>
-                    <div>
+                    <input
+                        type="text"
+                        name="identification"
+                        placeholder="Identification Number"
+                        value={!isIdentificationRequired ? `${Date.now()}` : runner.identification}
+                        onChange={handleChange}
+                        required={isIdentificationRequired}
+                        className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    />
+                    <div>S
                         <select
                             name="groupNumber"
                             value={runner.groupNumber}
