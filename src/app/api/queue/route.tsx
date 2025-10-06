@@ -7,7 +7,14 @@ export async function GET() {
     try {
         const queue = await prisma.queue.findMany({
             include: {
-                runner: true,
+                runner: {
+                    include: {
+                        laps: {
+                            orderBy: { startTime: 'desc' }, // or 'id' if that’s better
+                            take: 1, // only the most recent lap
+                        },
+                    },
+                },
             },
             orderBy: {
                 queuePlace: 'asc',
