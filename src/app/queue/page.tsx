@@ -12,6 +12,7 @@ interface QueueWithRunner extends Queue {
 export default function QueuePage() {
     const [queue, setQueue] = useState<QueueWithRunner[]>([]);
     const [isClient, setIsClient] = useState(false)
+    const [showExtra, setShowExtra] = useState(true);
 
     useEffect(() => {
         setIsClient(true)
@@ -72,9 +73,27 @@ export default function QueuePage() {
         }
     };
 
+    function rightShoeSize(shoeSize: string): string {
+        if (shoeSize === "0") return "??";
+        return shoeSize.toString();
+    }
+
+    function rightTime(time: string|null): string {
+        if (time === null) return "00:00";
+        const res = time.padStart(5, '0');
+        if (res[3] !== ':') return res.slice(0, 2) + ':' + res.slice(3);
+        return res;
+    }
+
     return (
-        <div className="p-4 mx-auto max-w-lg w-full">
+        <div className="p-4 mx-auto w-auto">
             {isClient && <div>
+                <button
+                    onClick={() => setShowExtra(!showExtra)}
+                    className="mb-4 px-3 py-1 bg-gray-200 rounded"
+                >
+                    {showExtra ? "Hide info" : "Show info"}
+                </button>
                 <h1 className="text-xl font-bold mb-4">Queue</h1>
                 <DragDropContext onDragEnd={handleDragEnd}>
                     <Droppable droppableId="queue" isDropDisabled={false} isCombineEnabled={false} ignoreContainerClipping={false} direction="vertical">
@@ -87,10 +106,18 @@ export default function QueuePage() {
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
-                                                className="border p-2 mb-2 flex justify-between items-center"
+                                                className="border p-2 mb-2 flex justify-between items-center min-w-full"
                                             >
-                                                <span>{index + 1}. {entry.runner.firstName} {entry.runner.lastName}</span>
-                                                <button onClick={() => handleDelete(entry.id)} className="text-red-500 ml-auto">
+                                                <span className="mr-auto pr-10">{index + 1}. {entry.runner.firstName} {entry.runner.lastName}</span>
+                                                {showExtra && (
+                                                    <span>
+                                                        Last: {rightTime(entry.runner.testTime)} ─
+                                                        Since: {rightTime(entry.runner.testTime)} ─
+                                                        Test: {rightTime(entry.runner.testTime)} ─
+                                                        Shoe: {rightShoeSize(entry.runner.shoeSize)}
+                                                      </span>
+                                                )}
+                                                <button onClick={() => handleDelete(entry.id)} className="text-red-500 ml-5">
                                                     <FontAwesomeIcon icon={faXmark} />
                                                 </button>
                                             </li>
