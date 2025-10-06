@@ -12,7 +12,7 @@ interface QueueWithRunner extends Queue {
 export default function QueuePage() {
     const [queue, setQueue] = useState<QueueWithRunner[]>([]);
     const [isClient, setIsClient] = useState(false)
-    const [showExtra, setShowExtra] = useState(true);
+    const [showExtra, setShowExtra] = useState(false);
 
     useEffect(() => {
         setIsClient(true)
