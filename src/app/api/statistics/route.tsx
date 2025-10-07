@@ -14,7 +14,8 @@ export async function GET() {
         const currentRunner = currentLap ? {
             name: `${currentLap.runner.firstName} ${currentLap.runner.lastName}`,
             startTime: currentLap.startTime,
-        } : { name: '', startTime: null };
+            facultyId: currentLap.runner.facultyId
+        } : { name: '', startTime: null, facultyId: null };
 
         // Retrieve the last 7 laps
         const last7Laps = await prisma.lap.findMany({
@@ -27,6 +28,7 @@ export async function GET() {
         const last7LapsData = last7Laps.map(lap => ({
             name: `${lap.runner.firstName} ${lap.runner.lastName}`,
             time: lap.time,
+            facultyId: lap.runner.facultyId,
         }));
 
         // Retrieve the 7 runners with the quickest laps
@@ -52,6 +54,7 @@ export async function GET() {
 
         const currentQueueData = currentQueue.map(queue => ({
             name: `${queue.runner.firstName} ${queue.runner.lastName}`,
+            facultyId: queue.runner.facultyId,
         }));
 
         // Retrieve the top 7 groups with the most laps

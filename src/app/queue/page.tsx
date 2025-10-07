@@ -1,18 +1,22 @@
 'use client'
 import { useState, useEffect } from "react";
-import { Queue, Runner } from '@prisma/client';
+import { Queue, Runner, Lap} from '@prisma/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
+interface RunnerWithLaps extends Runner {
+    laps: Lap[];
+}
+
 interface QueueWithRunner extends Queue {
-    runner: Runner;
+    runner: RunnerWithLaps;
 }
 
 export default function QueuePage() {
     const [queue, setQueue] = useState<QueueWithRunner[]>([]);
     const [isClient, setIsClient] = useState(false)
-    const [showExtra, setShowExtra] = useState(true);
+    const [showExtra, setShowExtra] = useState(false);
 
     useEffect(() => {
         setIsClient(true)
@@ -73,11 +77,19 @@ export default function QueuePage() {
         }
     };
 
+    // Helper function to print "??" when no shoe size is found.
     function rightShoeSize(shoeSize: string): string {
         if (shoeSize === "0") return "??";
-        return shoeSize.toString();
+        return shoeSize;
     }
 
+    /*
+     * Helper function to:
+     * return "00:00" when no time is found.
+     * format the time in the format "MM:SS".
+     *
+     * this function doesn't format times that are longer than 1 hour (just '.' -> ':').
+     */
     function rightTime(time: string | null): string {
         if (time === null) return "00:00";
         let res = time;
@@ -87,6 +99,19 @@ export default function QueuePage() {
         }
         res = res.padStart(5, '0');
         return res;
+    }
+
+    /*
+     * Helper function to:
+     * return "00:00" when no time is found or the runner is currently running for the first time.
+     * remove milliseconds from the time.
+     *
+     * This function just removes the last 3 characters from the string.
+     */
+    function noMilliSeconds(time: string): string {
+        if (time === "??" || time === "null") return "00:00";
+        const my_time = time.slice(0, -3);
+        return rightTime(my_time);
     }
 
     return (
@@ -115,8 +140,8 @@ export default function QueuePage() {
                                                 <span className="mr-auto pr-10">{index + 1}. {entry.runner.firstName} {entry.runner.lastName}</span>
                                                 {showExtra && (
                                                     <span>
-                                                        Last: {rightTime(entry.runner.testTime)} ─
-                                                        Since: {rightTime(entry.runner.testTime)} ─
+                                                        Last: {noMilliSeconds(entry.runner.laps?.[0]?.time ?? "??")} ─
+                                                        Since: {rightTime(null)} ─
                                                         Test: {rightTime(entry.runner.testTime)} ─
                                                         Shoe: {rightShoeSize(entry.runner.shoeSize)}
                                                       </span>
