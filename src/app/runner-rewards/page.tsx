@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 type Runner = {
   id: number;
@@ -10,6 +10,7 @@ type Runner = {
   reward1Collected: boolean;
   reward2Collected: boolean;
   reward3Collected: boolean;
+  completedLaps: number;
 };
 
 function getErrorMessage(err: unknown) {
@@ -21,10 +22,21 @@ function getErrorMessage(err: unknown) {
   }
 }
 
+// Tailwind styling for the checkboxes depending on availability
+function checkboxClasses(available: boolean) {
+  return [
+    "h-4 w-4 rounded border-2 align-middle transition-colors",
+    available
+      ? "border-blue-500 text-blue-600 focus:ring-blue-500"
+      : "border-gray-300 opacity-50 cursor-not-allowed",
+  ].join(" ");
+}
+
 export default function RunnerRewardsPage() {
   const [runners, setRunners] = useState<Runner[]>([]);
   const [loadingIds, setLoadingIds] = useState<Record<number, boolean>>({});
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchRunners();
@@ -43,6 +55,16 @@ export default function RunnerRewardsPage() {
       setError(getErrorMessage(err));
     }
   }
+
+  const filteredRunners = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return runners;
+    return runners.filter((r) =>
+      r.firstName.toLowerCase().includes(q) ||
+      r.lastName.toLowerCase().includes(q) ||
+      r.identification.toLowerCase().includes(q)
+    );
+  }, [runners, search]);
 
   async function toggleReward(id: number, field: string, value: boolean) {
     setLoadingIds((s) => ({ ...s, [id]: true }));
@@ -84,6 +106,22 @@ export default function RunnerRewardsPage() {
         <div className="mb-4 text-red-600">Error: {error}</div>
       ) : null}
 
+      <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div className="relative w-full md:max-w-sm">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by first name, last name, or identification"
+            className="w-full rounded-md border px-3 py-2 text-sm bg-background"
+            aria-label="Search runners"
+          />
+        </div>
+        <div className="text-sm text-muted-foreground">
+          Showing {filteredRunners.length} of {runners.length}
+        </div>
+      </div>
+
       <div className="overflow-auto bg-card border rounded-md">
         <table className="min-w-full table-auto">
           <thead>
@@ -97,40 +135,61 @@ export default function RunnerRewardsPage() {
             </tr>
           </thead>
           <tbody>
-            {runners.map((runner) => (
+            {filteredRunners.map((runner) => (
               <tr key={runner.id} className="border-t">
                 <td className="px-4 py-2">{runner.lastName}</td>
                 <td className="px-4 py-2">{runner.firstName}</td>
                 <td className="px-4 py-2">{runner.identification}</td>
                 <td className="px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={runner.reward1Collected}
-                    disabled={loadingIds[runner.id]}
-                    onChange={(e) =>
-                      toggleReward(runner.id, "reward1Collected", e.target.checked)
-                    }
-                  />
+                  {(() => {
+                    const available = runner.completedLaps >= 2;
+                    return (
+                      <input
+                        type="checkbox"
+                        className={checkboxClasses(available)}
+                        checked={runner.reward1Collected}
+                        disabled={!available || !!loadingIds[runner.id]}
+                        title={available ? undefined : "Available once 2 laps are completed"}
+                        onChange={(e) =>
+                          toggleReward(runner.id, "reward1Collected", e.target.checked)
+                        }
+                      />
+                    );
+                  })()}
                 </td>
                 <td className="px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={runner.reward2Collected}
-                    disabled={loadingIds[runner.id]}
-                    onChange={(e) =>
-                      toggleReward(runner.id, "reward2Collected", e.target.checked)
-                    }
-                  />
+                  {(() => {
+                    const available = runner.completedLaps >= 4;
+                    return (
+                      <input
+                        type="checkbox"
+                        className={checkboxClasses(available)}
+                        checked={runner.reward2Collected}
+                        disabled={!available || !!loadingIds[runner.id]}
+                        title={available ? undefined : "Available once 4 laps are completed"}
+                        onChange={(e) =>
+                          toggleReward(runner.id, "reward2Collected", e.target.checked)
+                        }
+                      />
+                    );
+                  })()}
                 </td>
                 <td className="px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={runner.reward3Collected}
-                    disabled={loadingIds[runner.id]}
-                    onChange={(e) =>
-                      toggleReward(runner.id, "reward3Collected", e.target.checked)
-                    }
-                  />
+                  {(() => {
+                    const available = runner.completedLaps >= 6;
+                    return (
+                      <input
+                        type="checkbox"
+                        className={checkboxClasses(available)}
+                        checked={runner.reward3Collected}
+                        disabled={!available || !!loadingIds[runner.id]}
+                        title={available ? undefined : "Available once 6 laps are completed"}
+                        onChange={(e) =>
+                          toggleReward(runner.id, "reward3Collected", e.target.checked)
+                        }
+                      />
+                    );
+                  })()}
                 </td>
               </tr>
             ))}

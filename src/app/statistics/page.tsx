@@ -30,6 +30,21 @@ interface StatisticsData {
     top7Runners: Group[];
 }
 
+// Toast + PR event types
+interface PREvent {
+    type: 'pr';
+    runnerId: number;
+    runnerName: string;
+    oldBest: string;
+    newBest: string;
+}
+
+interface Toast {
+    id: number;
+    title: string;
+    message: string;
+}
+
 // --- Countdown helpers ---
 function getNextDayTarget(): Date {
     const now = new Date();
@@ -109,6 +124,39 @@ export default function Statistics() {
         top7Runners: [],
     });
 
+    // Toast state + SSE subscription
+    const [toasts, setToasts] = useState<Toast[]>([]);
+    useEffect(() => {
+        const es = new EventSource('/api/events');
+        const onPR = (e: MessageEvent) => {
+            try {
+                const evt = JSON.parse(e.data) as PREvent;
+                if (evt && evt.type === 'pr') {
+                    const id = Date.now() + Math.random();
+                    setToasts((list) => [
+                        ...list,
+                        {
+                            id,
+                            title: 'Personal Record!',
+                            message: `${evt.runnerName} beat their time: ${evt.oldBest} → ${evt.newBest}`,
+                        },
+                    ]);
+                    setTimeout(() => {
+                        setToasts((list) => list.filter((t) => t.id !== id));
+                    }, 6000);
+                }
+            } catch {}
+        };
+        es.addEventListener('pr', onPR as EventListener);
+        es.onerror = () => {
+            // Let the browser handle reconnection automatically
+        };
+        return () => {
+            es.removeEventListener('pr', onPR as EventListener);
+            es.close();
+        };
+    }, []);
+
     // Countdown state
     const [target, setTarget] = useState<Date>(() => getNextDayTarget());
     const [countdown, setCountdown] = useState<string>('');
@@ -125,10 +173,27 @@ export default function Statistics() {
         async function fetchData() {
             const response = await fetch('/api/statistics');
             const result = await response.json();
-            setData(result);
+            // Preserve the locally calculated time to avoid flickering
+            setData((prev) => ({
+                ...result,
+                currentRunner: {
+                    ...result.currentRunner,
+                    time: prev.currentRunner.startTime === result.currentRunner.startTime
+                        ? prev.currentRunner.time
+                        : (result.currentRunner.startTime
+                            ? Date.now() - new Date(result.currentRunner.startTime).getTime()
+                            : 0),
+                },
+            }));
         }
 
+        // Initial fetch
         fetchData();
+
+        // Poll for updates every 2 seconds
+        const pollInterval = setInterval(() => {
+            fetchData();
+        }, 2000);
 
         // Timer for current runner time (10ms)
         const timer = setInterval(() => {
@@ -156,6 +221,7 @@ export default function Statistics() {
         }, 1000);
 
         return () => {
+            clearInterval(pollInterval);
             clearInterval(timer);
             clearInterval(cd);
         };
@@ -169,6 +235,16 @@ export default function Statistics() {
 
     return (
         <div className="bg-gray-50 text-gray-900 h-screen w-screen">
+            {/* Toast container top-right */}
+            <div className="fixed top-4 right-4 z-50 space-y-3">
+                {toasts.map((t) => (
+                    <div key={t.id} className="w-80 bg-red-600 text-white rounded-md shadow-lg p-4 border-2 border-red-800">
+                        <div className="font-semibold mb-1">{t.title}</div>
+                        <div className="text-sm leading-snug">{t.message}</div>
+                    </div>
+                ))}
+            </div>
+
             <div className="container mx-auto px-6 py-4 h-full flex flex-col max-w-screen-2xl">
                 {/* Header */}
                 <div className="flex justify-between items-end mb-6">
@@ -180,7 +256,7 @@ export default function Statistics() {
                 <div className="grid grid-cols-3 grid-rows-2 gap-6 flex-1 overflow-hidden">
                     {/* Current Runner */}
                     <div className="bg-white rounded-lg shadow-md p-6 flex flex-col min-h-0 relative">
-                        <div aria-hidden className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-50/60 via-transparent to-blue-100/70" />
+                        <div aria-hidden className="absolute inset-0 rounded-lg" />
                         <h2 className="text-2xl font-bold mb-4 relative">Current Runner</h2>
                         <div className="flex-1 flex items-center justify-center relative">
                             <div className="text-center space-y-4">

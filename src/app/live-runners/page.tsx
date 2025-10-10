@@ -28,6 +28,20 @@ interface StatisticsData {
     currentQueue: QueueEntry[];
 }
 
+interface PREvent {
+    type: 'pr';
+    runnerId: number;
+    runnerName: string;
+    oldBest: string;
+    newBest: string;
+}
+
+interface Toast {
+    id: number;
+    title: string;
+    message: string;
+}
+
 export default function LiveRunners() {
     const [data, setData] = useState<StatisticsData>({
         currentRunner: { name: '', startTime: null, time: 0, facultyId: 0},
@@ -36,16 +50,35 @@ export default function LiveRunners() {
         top7Runners: [],
         currentQueue: []
     });
+    const [toasts, setToasts] = useState<Toast[]>([]);
 
     useEffect(() => {
         async function fetchData() {
             const response = await fetch('/api/statistics');
             const result = await response.json();
-            setData(result);
+            // Preserve the locally calculated time to avoid flickering
+            setData((prev) => ({
+                ...result,
+                currentRunner: {
+                    ...result.currentRunner,
+                    time: prev.currentRunner.startTime === result.currentRunner.startTime
+                        ? prev.currentRunner.time
+                        : (result.currentRunner.startTime
+                            ? Date.now() - new Date(result.currentRunner.startTime).getTime()
+                            : 0),
+                },
+            }));
         }
 
+        // Initial fetch
         fetchData();
 
+        // Poll for updates every 2 seconds
+        const pollInterval = setInterval(() => {
+            fetchData();
+        }, 2000);
+
+        // Timer for current runner time (10ms)
         const timer = setInterval(() => {
             setData(prev => ({
                 ...prev,
@@ -53,7 +86,43 @@ export default function LiveRunners() {
             }));
         }, 10);
 
-        return () => clearInterval(timer);
+        return () => {
+            clearInterval(pollInterval);
+            clearInterval(timer);
+        };
+    }, []);
+
+    // Subscribe to SSE for PR events
+    useEffect(() => {
+        const es = new EventSource('/api/events');
+        const onPR = (e: MessageEvent) => {
+            try {
+                const evt = JSON.parse(e.data) as PREvent;
+                if (evt && evt.type === 'pr') {
+                    const id = Date.now() + Math.random();
+                    setToasts((list) => [
+                        ...list,
+                        {
+                            id,
+                            title: 'Personal Record!',
+                            message: `${evt.runnerName} beat their time: ${evt.oldBest} → ${evt.newBest}`,
+                        },
+                    ]);
+                    // Auto-dismiss after 6 seconds
+                    setTimeout(() => {
+                        setToasts((list) => list.filter((t) => t.id !== id));
+                    }, 6000);
+                }
+            } catch {}
+        };
+        es.addEventListener('pr', onPR as EventListener);
+        es.onerror = () => {
+            // Let browser reconnect; optionally we could close and reopen
+        };
+        return () => {
+            es.removeEventListener('pr', onPR as EventListener);
+            es.close();
+        };
     }, []);
 
     const previousRunner = data.last7Laps.length > 0 ? data.last7Laps[0] : { name: 'none', time: 0, facultyId: 0 };
@@ -102,7 +171,17 @@ export default function LiveRunners() {
     const previousRunnerTotal = previousRunner.time;
 
     return (
-        <div className="h-full w-full flex flex-col items-center justify-center gap-4">
+        <div className="h-full w-full flex flex-col items-center gap-4">
+            {/* Toast container top-right */}
+            <div className="fixed top-4 right-4 z-50 space-y-3">
+                {toasts.map((t) => (
+                    <div key={t.id} className="w-80 bg-red-600 text-white rounded-md shadow-lg p-4 border-2 border-red-800">
+                        <div className="font-semibold mb-1">{t.title}</div>
+                        <div className="text-sm leading-snug">{t.message}</div>
+                    </div>
+                ))}
+            </div>
+
             {/* Previous Runner */}
             <div className="w-2/5 bg-white rounded-lg shadow-md p-8 border-t-4 border-blue-500 flex items-center gap-4">
                 {/* Runner Image */}

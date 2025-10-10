@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { emitPersonalRecord } from '@/lib/sse';
 
 const prisma = new PrismaClient();
+
+function parseTimeToMs(t: string): number {
+    const m = t.match(/^(\d+):(\d{2})\.(\d{2})$/);
+    if (!m) return Number.POSITIVE_INFINITY;
+    const minutes = Number(m[1]);
+    const seconds = Number(m[2]);
+    const hundredths = Number(m[3]);
+    return minutes * 60_000 + seconds * 1_000 + hundredths * 10;
+}
 
 export async function POST() {
     try {
@@ -28,11 +38,37 @@ export async function POST() {
             const hundreds = Math.floor((timeDiff % 1000) / 10);
             const lapTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}.${hundreds < 10 ? '0' : ''}${hundreds}`;
 
+            // Compute old best numerically before updating
+            const finished = await prisma.lap.findMany({
+                where: { runnerId: currentLap.runnerId, NOT: { time: 'null' } },
+                select: { time: true },
+            });
+            let oldBest: string | null = null;
+            let oldBestMs = Number.POSITIVE_INFINITY;
+            for (const l of finished) {
+                const ms = parseTimeToMs(l.time);
+                if (ms < oldBestMs) {
+                    oldBestMs = ms;
+                    oldBest = l.time;
+                }
+            }
+
             // Update the lap time in the database
             await prisma.lap.update({
                 where: { id: currentLap.id },
                 data: { time: lapTime },
             });
+
+            // Emit PR if this is a new personal best and there was an old best
+            if (oldBest && parseTimeToMs(lapTime) < oldBestMs) {
+                emitPersonalRecord({
+                    type: 'pr',
+                    runnerId: currentLap.runnerId,
+                    runnerName: `${currentLap.runner.firstName} ${currentLap.runner.lastName}`,
+                    oldBest,
+                    newBest: lapTime,
+                });
+            }
         }
 
         // Get the first two runners in the queue
