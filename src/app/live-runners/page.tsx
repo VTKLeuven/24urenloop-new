@@ -183,62 +183,67 @@ export default function LiveRunners() {
             </div>
 
             {/* Previous Runner */}
-            <div className="w-2/5 bg-white rounded-lg shadow-md p-8 border-t-4 border-blue-500 flex flex-col items-center">
-                <h2 className="text-lg font-semibold text-blue-600 mb-2">Previous Runner</h2>
-                <p className="text-gray-700 text-base">{previousRunner.name}</p>
-                <p className="text-gray-700 text-base">
+            <div className="w-2/5 bg-white rounded-lg shadow-md p-8 border-t-4 border-blue-500 flex items-center gap-4">
+                {/* Runner Image */}
+                {previousRunnerInfo === "topRunner" && (
+                    <Image
+                        src="/images/YellowShirt.png"
+                        alt="Yellow jersey"
+                        width={128}
+                        height={128}
+                        className="rounded-full object-cover"
+                    />
+                )}
+
+                {previousRunnerInfo === "quickestRunner" && (
+                    <Image
+                        src="/images/GreenShirt.png"
+                        alt="Green jersey"
+                        width={128}
+                        height={128}
+                        className="rounded-full object-cover"
+                    />
+                )}
+
+                {previousRunnerInfo === "GentRunner" && (
+                    <Image
+                        src="/images/GentShirt.png"
+                        alt="VTK jersey"
+                        width={128}
+                        height={128}
+                        className="rounded-full object-cover"
+                    />
+                )}
+
+                {previousRunnerInfo === "" && (
+                    <Image
+                        src="/images/VTKShirt.png"
+                        alt="VTK jersey"
+                        width={128}
+                        height={128}
+                        className="rounded-full object-cover"
+                    />
+                )}
+
+                {/* Runner Name */}
+                <div className="flex flex-col flex-grow">
+                    <h2 className="text-lg font-semibold text-blue-600">Previous Runner</h2>
+                    <p className="text-gray-700 text-base">{previousRunner.name || "none"}</p>
+                </div>
+
+                {/* Runner Time */}
+                <div className="text-gray-700 text-3xl font-semibold">
                     {`${previousRunnerTotal.toString().padStart(2, "0")}`}
-                </p>
-                <p className="text-gray-700 text-base mb-4">
-                    {previousRunnerInfo === "topRunner" && (
-                        <Image
-                            src="/images/YellowShirt.png"
-                            alt="Yellow jersey"
-                            width={128}
-                            height={128}
-                            className="rounded-full object-cover"
-                        />
-                    )}
-
-                    {previousRunnerInfo === "quickestRunner" && (
-                        <Image
-                            src="/images/GreenShirt.png"
-                            alt="Green jersey"
-                            width={128}
-                            height={128}
-                            className="rounded-full object-cover"
-                        />
-                    )}
-
-                    {previousRunnerInfo === "GentRunner" && (
-                        <Image
-                            src="/images/GentShirt.png"
-                            alt="VTK jersey"
-                            width={128}
-                            height={128}
-                            className="rounded-full object-cover"
-                        />
-                    )}
-
-                    {previousRunnerInfo === "" && (
-                        <Image
-                            src="/images/VTKShirt.png"
-                            alt="VTK jersey"
-                            width={128}
-                            height={128}
-                            className="rounded-full object-cover"
-                        />
-                    )}
-                </p>
+                </div>
             </div>
 
             {/* Current Runner */}
             <div className="w-3/4 bg-white rounded-lg shadow-lg p-16 border-t-4 border-blue-600 flex flex-col items-center">
                 <h1 className="text-3xl font-bold text-blue-600 mb-4">Current Runner</h1>
-                <p className="text-gray-700 text-2xl font-semibold">
+                <p className="text-gray-700 text-8xl font-semibold">
                     {data.currentRunner.name || "none"}
                 </p>
-                <p className="text-gray-700 text-2xl font-semibold">
+                <p className="text-gray-700 text-5xl font-semibold">
                     {`${currentRunnerMinutes.toString().padStart(2, "0")}:${currentRunnerSeconds.toString().padStart(2, "0")}`}
                 </p>
                 <p className="text-gray-700 text-base mb-4">
