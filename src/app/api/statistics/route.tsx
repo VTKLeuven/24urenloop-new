@@ -63,6 +63,10 @@ export async function GET() {
         });
 
         const groupLapCounts = await Promise.all(runners.map(async runner => {
+            // Skip runners without a group
+            if (!runner.groupNumber) {
+                return { groupName: null, laps: 0 };
+            }
             const group = await prisma.group.findUnique({
                 where: { groupNumber: runner.groupNumber },
             });

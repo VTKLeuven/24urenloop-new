@@ -19,13 +19,13 @@ model Runner {
   firstName        String
   lastName         String
   identification   String   @unique
-  facultyId        Int
+  facultyId        Int?
   registrationTime DateTime @default(now())
-  groupNumber      Int
+  groupNumber      Int?
   testTime         String?
   firstYear        Boolean
   shoeSize         String   @default("0")
-  laps             Lap[] // Relationship to laps
+  laps             Lap[]
   queue            Queue[]
   reward1Collected Boolean  @default(false)
   reward2Collected Boolean  @default(false)

@@ -107,14 +107,21 @@ export default function Page() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        // If identification is not required and empty, generate one
+        const identificationValue = !isIdentificationRequired && !runner.identification
+            ? `${Date.now()}`
+            : runner.identification;
+
         const response = await fetch("/api/add-runner", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 ...runner,
-                groupNumber: parseInt(runner.groupNumber, 10),
+                identification: identificationValue,
+                groupNumber: runner.groupNumber ? parseInt(runner.groupNumber, 10) : null,
                 testTime: runner.testTime || null,
-                facultyId: parseInt(runner.facultyId, 10),
+                facultyId: runner.facultyId ? parseInt(runner.facultyId, 10) : null,
             }),
         });
         if (response.ok) {
@@ -369,7 +376,6 @@ export default function Page() {
                         name="facultyId"
                         value={runner.facultyId}
                         onChange={handleChange}
-                        required
                         className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     >
                         <option value="" disabled>
@@ -384,18 +390,17 @@ export default function Page() {
                     <input
                         type="text"
                         name="identification"
-                        placeholder="Identification Number"
-                        value={!isIdentificationRequired ? `${Date.now()}` : runner.identification}
+                        placeholder="Identification (e.g. R-number)"
+                        value={runner.identification}
                         onChange={handleChange}
                         required={isIdentificationRequired}
                         className="rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
-                    <div>S
+                    <div>
                         <select
                             name="groupNumber"
                             value={runner.groupNumber}
                             onChange={handleChange}
-                            required
                             className="rounded-md px-3 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         >
                             <option value="" disabled>

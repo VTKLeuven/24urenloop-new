@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Runner" ALTER COLUMN "groupNumber" DROP NOT NULL,
+ALTER COLUMN "facultyId" DROP NOT NULL;
