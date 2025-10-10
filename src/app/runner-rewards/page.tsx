@@ -10,6 +10,7 @@ type Runner = {
   reward1Collected: boolean;
   reward2Collected: boolean;
   reward3Collected: boolean;
+  completedLaps: number;
 };
 
 function getErrorMessage(err: unknown) {
@@ -19,6 +20,16 @@ function getErrorMessage(err: unknown) {
   } catch {
     return 'Unknown error';
   }
+}
+
+// Tailwind styling for the checkboxes depending on availability
+function checkboxClasses(available: boolean) {
+  return [
+    "h-4 w-4 rounded border-2 align-middle transition-colors",
+    available
+      ? "border-blue-500 text-blue-600 focus:ring-blue-500"
+      : "border-gray-300 opacity-50 cursor-not-allowed",
+  ].join(" ");
 }
 
 export default function RunnerRewardsPage() {
@@ -103,34 +114,55 @@ export default function RunnerRewardsPage() {
                 <td className="px-4 py-2">{runner.firstName}</td>
                 <td className="px-4 py-2">{runner.identification}</td>
                 <td className="px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={runner.reward1Collected}
-                    disabled={loadingIds[runner.id]}
-                    onChange={(e) =>
-                      toggleReward(runner.id, "reward1Collected", e.target.checked)
-                    }
-                  />
+                  {(() => {
+                    const available = runner.completedLaps >= 2;
+                    return (
+                      <input
+                        type="checkbox"
+                        className={checkboxClasses(available)}
+                        checked={runner.reward1Collected}
+                        disabled={!available || !!loadingIds[runner.id]}
+                        title={available ? undefined : "Available once 2 laps are completed"}
+                        onChange={(e) =>
+                          toggleReward(runner.id, "reward1Collected", e.target.checked)
+                        }
+                      />
+                    );
+                  })()}
                 </td>
                 <td className="px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={runner.reward2Collected}
-                    disabled={loadingIds[runner.id]}
-                    onChange={(e) =>
-                      toggleReward(runner.id, "reward2Collected", e.target.checked)
-                    }
-                  />
+                  {(() => {
+                    const available = runner.completedLaps >= 4;
+                    return (
+                      <input
+                        type="checkbox"
+                        className={checkboxClasses(available)}
+                        checked={runner.reward2Collected}
+                        disabled={!available || !!loadingIds[runner.id]}
+                        title={available ? undefined : "Available once 4 laps are completed"}
+                        onChange={(e) =>
+                          toggleReward(runner.id, "reward2Collected", e.target.checked)
+                        }
+                      />
+                    );
+                  })()}
                 </td>
                 <td className="px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={runner.reward3Collected}
-                    disabled={loadingIds[runner.id]}
-                    onChange={(e) =>
-                      toggleReward(runner.id, "reward3Collected", e.target.checked)
-                    }
-                  />
+                  {(() => {
+                    const available = runner.completedLaps >= 6;
+                    return (
+                      <input
+                        type="checkbox"
+                        className={checkboxClasses(available)}
+                        checked={runner.reward3Collected}
+                        disabled={!available || !!loadingIds[runner.id]}
+                        title={available ? undefined : "Available once 6 laps are completed"}
+                        onChange={(e) =>
+                          toggleReward(runner.id, "reward3Collected", e.target.checked)
+                        }
+                      />
+                    );
+                  })()}
                 </td>
               </tr>
             ))}

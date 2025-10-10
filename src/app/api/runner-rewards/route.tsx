@@ -7,8 +7,32 @@ export async function GET() {
     try {
         const runners = await prisma.runner.findMany({
             orderBy: { lastName: 'asc' },
+            include: {
+                laps: {
+                    where: { NOT: { time: 'null' } },
+                    select: { id: true },
+                },
+            },
         });
-        return NextResponse.json(runners);
+
+        // Return a slim shape with a computed completedLaps property.
+        const result = (runners as unknown[]).map((r) => {
+            const rec = (r ?? {}) as Record<string, unknown>;
+            const lapsVal = rec['laps'];
+            const lapsArr = Array.isArray(lapsVal) ? (lapsVal as unknown[]) : [];
+            return {
+                id: rec['id'],
+                firstName: rec['firstName'],
+                lastName: rec['lastName'],
+                identification: rec['identification'],
+                reward1Collected: Boolean(rec['reward1Collected']),
+                reward2Collected: Boolean(rec['reward2Collected']),
+                reward3Collected: Boolean(rec['reward3Collected']),
+                completedLaps: lapsArr.length,
+            };
+        });
+
+        return NextResponse.json(result);
     } catch (err) {
         console.error(err);
         return NextResponse.json({ error: 'Failed to fetch runners' }, { status: 500 });
