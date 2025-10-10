@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 type Runner = {
   id: number;
@@ -36,6 +36,7 @@ export default function RunnerRewardsPage() {
   const [runners, setRunners] = useState<Runner[]>([]);
   const [loadingIds, setLoadingIds] = useState<Record<number, boolean>>({});
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchRunners();
@@ -54,6 +55,16 @@ export default function RunnerRewardsPage() {
       setError(getErrorMessage(err));
     }
   }
+
+  const filteredRunners = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return runners;
+    return runners.filter((r) =>
+      r.firstName.toLowerCase().includes(q) ||
+      r.lastName.toLowerCase().includes(q) ||
+      r.identification.toLowerCase().includes(q)
+    );
+  }, [runners, search]);
 
   async function toggleReward(id: number, field: string, value: boolean) {
     setLoadingIds((s) => ({ ...s, [id]: true }));
@@ -95,6 +106,22 @@ export default function RunnerRewardsPage() {
         <div className="mb-4 text-red-600">Error: {error}</div>
       ) : null}
 
+      <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div className="relative w-full md:max-w-sm">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by first name, last name, or identification"
+            className="w-full rounded-md border px-3 py-2 text-sm bg-background"
+            aria-label="Search runners"
+          />
+        </div>
+        <div className="text-sm text-muted-foreground">
+          Showing {filteredRunners.length} of {runners.length}
+        </div>
+      </div>
+
       <div className="overflow-auto bg-card border rounded-md">
         <table className="min-w-full table-auto">
           <thead>
@@ -108,7 +135,7 @@ export default function RunnerRewardsPage() {
             </tr>
           </thead>
           <tbody>
-            {runners.map((runner) => (
+            {filteredRunners.map((runner) => (
               <tr key={runner.id} className="border-t">
                 <td className="px-4 py-2">{runner.lastName}</td>
                 <td className="px-4 py-2">{runner.firstName}</td>
