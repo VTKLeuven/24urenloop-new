@@ -67,11 +67,12 @@ model GlobalState {
 }
 
 model ShiftCheckIn {
-  id        Int      @id @default(autoincrement())
-  runnerId  Int
-  timeSlot  String
-  checkedIn Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  runnerId      Int
+  timeSlot      String
+  checkedIn     Boolean  @default(false)
+  alreadyCalled Boolean  @default(false)
+  createdAt     DateTime @default(now())
 
   runner Runner @relation(fields: [runnerId], references: [id])
 

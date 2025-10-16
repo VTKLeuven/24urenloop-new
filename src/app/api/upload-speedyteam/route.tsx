@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
                 const voornaam = row[2]; // Column C
                 const achternaam = row[3]; // Column D
                 const rNummer = row[4]; // Column E
+                const gsmNummer = row[5]; // Column F - GSM-nummer
                 const tijdInMinSec = row[6]; // Column G
                 const schoenmaat = row[8]; // Column I
 
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest) {
                 const firstName = String(voornaam).trim();
                 const lastName = String(achternaam).trim();
                 const identification = String(rNummer).trim();
+                const phoneNumber = gsmNummer ? String(gsmNummer).trim() : null;
                 const shoeSize = schoenmaat ? String(schoenmaat).trim() : "0";
                 
                 // Parse test time - DEBUG ALL METHODS
@@ -136,24 +138,34 @@ export async function POST(req: NextRequest) {
                 });
 
                 if (existingRunner) {
-                    results.failed++;
-                    results.errors.push(`Row ${i + 2}: Runner with identification ${identification} already exists`);
-                    continue;
+                    // Update existing runner with new data
+                    await prisma.runner.update({
+                        where: { identification },
+                        data: {
+                            firstName,
+                            lastName,
+                            phoneNumber,
+                            testTime,
+                            shoeSize,
+                            // Note: facultyId, groupNumber, firstYear, and other fields are preserved
+                        }
+                    });
+                } else {
+                    // Create new runner
+                    await prisma.runner.create({
+                        data: {
+                            firstName,
+                            lastName,
+                            identification,
+                            phoneNumber,
+                            facultyId: 1, // Default facultyId
+                            groupNumber: 0, // Default groupNumber
+                            testTime,
+                            firstYear: false, // Default firstYear
+                            shoeSize,
+                        }
+                    });
                 }
-
-                // Create new runner
-                await prisma.runner.create({
-                    data: {
-                        firstName,
-                        lastName,
-                        identification,
-                        facultyId: 1, // Default facultyId
-                        groupNumber: 0, // Default groupNumber
-                        testTime,
-                        firstYear: false, // Default firstYear
-                        shoeSize,
-                    }
-                });
 
                 results.successful++;
             } catch (error) {

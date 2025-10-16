@@ -102,3 +102,66 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// DELETE: Remove a runner from a time slot
+export async function DELETE(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const checkInId = searchParams.get('checkInId');
+
+    if (!checkInId) {
+      return NextResponse.json({ error: 'Check-in ID is required' }, { status: 400 });
+    }
+
+    await prisma.shiftCheckIn.delete({
+      where: { id: parseInt(checkInId) },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error removing runner from shift:', error);
+    return NextResponse.json({ error: 'Failed to remove runner' }, { status: 500 });
+  }
+}
+
+// PUT: Add a single runner to a time slot by runner ID
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { timeSlot, runnerId } = body;
+
+    if (!timeSlot || !runnerId) {
+      return NextResponse.json({ error: 'Time slot and runner ID are required' }, { status: 400 });
+    }
+
+    // Add to shift check-in (upsert to avoid duplicates)
+    const checkIn = await prisma.shiftCheckIn.upsert({
+      where: {
+        runnerId_timeSlot: {
+          runnerId,
+          timeSlot,
+        },
+      },
+      create: {
+        runnerId,
+        timeSlot,
+        checkedIn: false,
+      },
+      update: {}, // Don't change anything if already exists
+      include: {
+        runner: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            phoneNumber: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(checkIn);
+  } catch (error) {
+    console.error('Error adding runner to shift:', error);
+    return NextResponse.json({ error: 'Failed to add runner' }, { status: 500 });
+  }
+}
