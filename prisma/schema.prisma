@@ -15,21 +15,23 @@ model User {
 }
 
 model Runner {
-  id               Int      @id @default(autoincrement())
+  id               Int            @id @default(autoincrement())
   firstName        String
   lastName         String
-  identification   String   @unique
+  identification   String         @unique
+  phoneNumber      String?
   facultyId        Int?
-  registrationTime DateTime @default(now())
+  registrationTime DateTime       @default(now())
   groupNumber      Int?
   testTime         String?
   firstYear        Boolean
-  shoeSize         String   @default("0")
+  shoeSize         String         @default("0")
   laps             Lap[]
   queue            Queue[]
-  reward1Collected Boolean  @default(false)
-  reward2Collected Boolean  @default(false)
-  reward3Collected Boolean  @default(false)
+  reward1Collected Boolean        @default(false)
+  reward2Collected Boolean        @default(false)
+  reward3Collected Boolean        @default(false)
+  shiftCheckIns    ShiftCheckIn[]
 }
 
 model Group {
@@ -62,4 +64,16 @@ model Lap {
 model GlobalState {
   id      Int     @id @default(1) // Ensures there's only one row
   raining Boolean
+}
+
+model ShiftCheckIn {
+  id        Int      @id @default(autoincrement())
+  runnerId  Int
+  timeSlot  String
+  checkedIn Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  runner Runner @relation(fields: [runnerId], references: [id])
+
+  @@unique([runnerId, timeSlot])
 }

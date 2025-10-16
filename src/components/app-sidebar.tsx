@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from "react";
-import { TvMinimalPlay, ChartNoAxesCombined, UserRoundPlus, Users, Search, SkipForward, CloudDrizzle, FileWarningIcon, Upload, Gift } from "lucide-react";
+import { TvMinimalPlay, ChartNoAxesCombined, UserRoundPlus, Users, Search, SkipForward, CloudDrizzle, FileWarningIcon, Upload, Gift, ClipboardCheck } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 import {
@@ -44,6 +44,11 @@ const items = [
         title: "Query",
         url: "/query",
         icon: Search,
+    },
+    {
+        title: "Shift Check-Ins",
+        url: "/shift-checkins",
+        icon: ClipboardCheck,
     },
     {
         title: "Upload speedyteam",
