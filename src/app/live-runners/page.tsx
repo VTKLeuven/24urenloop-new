@@ -171,27 +171,27 @@ export default function LiveRunners() {
     const previousRunnerTotal = previousRunner.time;
 
     return (
-        <div className="h-full w-full flex flex-col items-center gap-4">
+        <div className="h-screen w-full flex flex-col items-center justify-center gap-6 p-6 overflow-hidden">
             {/* Toast container top-right */}
             <div className="fixed top-4 right-4 z-50 space-y-3">
                 {toasts.map((t) => (
-                    <div key={t.id} className="w-80 bg-red-600 text-white rounded-md shadow-lg p-4 border-2 border-red-800">
-                        <div className="font-semibold mb-1">{t.title}</div>
-                        <div className="text-sm leading-snug">{t.message}</div>
+                    <div key={t.id} className="w-96 bg-red-600 text-white rounded-md shadow-lg p-6 border-2 border-red-800">
+                        <div className="font-semibold text-lg mb-2">{t.title}</div>
+                        <div className="text-base leading-snug">{t.message}</div>
                     </div>
                 ))}
             </div>
 
             {/* Previous Runner */}
-            <div className="w-2/5 bg-white rounded-lg shadow-md p-8 border-t-4 border-blue-500 flex items-center gap-4">
+            <div className="w-4/5 bg-white rounded-lg shadow-md p-8 border-t-4 border-blue-500 flex items-center gap-8">
                 {/* Runner Image */}
                 {previousRunnerInfo === "topRunner" && (
                     <Image
                         src="/images/YellowShirt.png"
                         alt="Yellow jersey"
-                        width={128}
-                        height={128}
-                        className="rounded-full object-cover"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
                     />
                 )}
 
@@ -199,9 +199,9 @@ export default function LiveRunners() {
                     <Image
                         src="/images/GreenShirt.png"
                         alt="Green jersey"
-                        width={128}
-                        height={128}
-                        className="rounded-full object-cover"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
                     />
                 )}
 
@@ -209,9 +209,9 @@ export default function LiveRunners() {
                     <Image
                         src="/images/GentShirt.png"
                         alt="VTK jersey"
-                        width={128}
-                        height={128}
-                        className="rounded-full object-cover"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
                     />
                 )}
 
@@ -219,40 +219,40 @@ export default function LiveRunners() {
                     <Image
                         src="/images/VTKShirt.png"
                         alt="VTK jersey"
-                        width={128}
-                        height={128}
-                        className="rounded-full object-cover"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
                     />
                 )}
 
                 {/* Runner Name */}
                 <div className="flex flex-col flex-grow">
-                    <h2 className="text-lg font-semibold text-blue-600">Previous Runner</h2>
-                    <p className="text-gray-700 text-base">{previousRunner.name || "none"}</p>
+                    <h2 className="text-2xl font-semibold text-blue-600 mb-2">Previous Runner</h2>
+                    <p className="text-gray-700 text-5xl font-bold">{previousRunner.name || "none"}</p>
                 </div>
 
                 {/* Runner Time */}
-                <div className="text-gray-700 text-3xl font-semibold">
+                <div className="text-gray-700 text-6xl font-bold px-6">
                     {`${previousRunnerTotal.toString().padStart(2, "0")}`}
                 </div>
             </div>
 
             {/* Current Runner */}
-            <div className="w-3/4 bg-white rounded-lg shadow-lg p-16 border-t-4 border-blue-600 flex flex-col items-center">
-                <h1 className="text-3xl font-bold text-blue-600 mb-4">Current Runner</h1>
-                <p className="text-gray-700 text-8xl font-semibold">
+            <div className="w-11/12 bg-white rounded-lg shadow-lg p-12 border-t-8 border-blue-600 flex flex-col items-center gap-4">
+                <h1 className="text-4xl font-bold text-blue-600 uppercase">Current Runner</h1>
+                <p className="text-gray-900 text-8xl font-bold leading-none">
                     {data.currentRunner.name || "none"}
                 </p>
-                <p className="text-gray-700 text-5xl font-semibold">
+                <p className="text-gray-700 text-6xl font-bold">
                     {`${currentRunnerMinutes.toString().padStart(2, "0")}:${currentRunnerSeconds.toString().padStart(2, "0")}`}
                 </p>
-                <p className="text-gray-700 text-base mb-4">
+                <div className="flex justify-center items-center">
                     {currentRunnerInfo === "topRunner" && (
                         <Image
                             src="/images/YellowShirt.png"
                             alt="Yellow jersey"
-                            width={256}
-                            height={256}
+                            width={180}
+                            height={180}
                             className="rounded-full object-cover"
                         />
                     )}
@@ -261,8 +261,8 @@ export default function LiveRunners() {
                         <Image
                             src="/images/GreenShirt.png"
                             alt="Green jersey"
-                            width={256}
-                            height={256}
+                            width={180}
+                            height={180}
                             className="rounded-full object-cover"
                         />
                     )}
@@ -271,8 +271,8 @@ export default function LiveRunners() {
                         <Image
                             src="/images/GentShirt.png"
                             alt="VTK jersey"
-                            width={256}
-                            height={256}
+                            width={180}
+                            height={180}
                             className="rounded-full object-cover"
                         />
                     )}
@@ -281,24 +281,24 @@ export default function LiveRunners() {
                         <Image
                             src="/images/VTKShirt.png"
                             alt="VTK jersey"
-                            width={256}
-                            height={256}
+                            width={180}
+                            height={180}
                             className="rounded-full object-cover"
                         />
                     )}
-                </p>
+                </div>
             </div>
 
             {/* Next Runner */}
-            <div className="w-2/5 bg-white rounded-lg shadow-md p-8 border-t-4 border-blue-500 flex items-center gap-4">
+            <div className="w-4/5 bg-white rounded-lg shadow-md p-8 border-t-4 border-blue-500 flex items-center gap-8">
                 {/* Runner Image */}
                 {nextRunnerInfo === "topRunner" && (
                     <Image
                         src="/images/YellowShirt.png"
                         alt="Yellow jersey"
-                        width={128}
-                        height={128}
-                        className="rounded-full object-cover"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
                     />
                 )}
 
@@ -306,9 +306,9 @@ export default function LiveRunners() {
                     <Image
                         src="/images/GreenShirt.png"
                         alt="Green jersey"
-                        width={128}
-                        height={128}
-                        className="rounded-full object-cover"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
                     />
                 )}
 
@@ -316,9 +316,9 @@ export default function LiveRunners() {
                     <Image
                         src="/images/GentShirt.png"
                         alt="VTK jersey"
-                        width={128}
-                        height={128}
-                        className="rounded-full object-cover"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
                     />
                 )}
 
@@ -326,16 +326,16 @@ export default function LiveRunners() {
                     <Image
                         src="/images/VTKShirt.png"
                         alt="VTK jersey"
-                        width={128}
-                        height={128}
-                        className="rounded-full object-cover"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
                     />
                 )}
 
                 {/* Runner Name */}
-                <div className="flex flex-col">
-                    <h2 className="text-lg font-semibold text-blue-600">Next Runner</h2>
-                    <p className="text-gray-700 text-base">{nextRunner.name || "none"}</p>
+                <div className="flex flex-col flex-grow">
+                    <h2 className="text-2xl font-semibold text-blue-600 mb-2">Next Runner</h2>
+                    <p className="text-gray-700 text-5xl font-bold">{nextRunner.name || "none"}</p>
                 </div>
             </div>
         </div>
