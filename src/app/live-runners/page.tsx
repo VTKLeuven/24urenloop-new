@@ -26,6 +26,8 @@ interface StatisticsData {
     quickest7Runners: QueueEntry[];
     top7Runners: QueueEntry[];
     currentQueue: QueueEntry[];
+    top7FirstyearRunners: QueueEntry[];
+    top7LapPoints: QueueEntry[];
 }
 
 interface PREvent {
@@ -48,7 +50,9 @@ export default function LiveRunners() {
         last7Laps: [],
         quickest7Runners: [],
         top7Runners: [],
-        currentQueue: []
+        currentQueue: [],
+        top7FirstyearRunners: [],
+        top7LapPoints: [],
     });
     const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -132,38 +136,47 @@ export default function LiveRunners() {
     const currentRunnerMinutes = Math.floor(currentRunnerTotalSeconds / 60);
     const currentRunnerSeconds = currentRunnerTotalSeconds % 60;
 
-    //TODO add other jerseys (now only green and yellow jersey and Gent)
     let nextRunnerInfo = "";
     if (nextRunner.name == data.quickest7Runners[0]?.name){
         nextRunnerInfo = "quickestRunner";
     } else if (nextRunner.name == data.top7Runners[0]?.name){
         nextRunnerInfo = "topRunner";
+    } else if (nextRunner.name == data.top7LapPoints[0]?.name){
+        nextRunnerInfo = "topPoints";
+    } else if (nextRunner.name == data.top7FirstyearRunners[0]?.name){
+        nextRunnerInfo = "topFirstyearRunner";
     } else if (nextRunner.facultyId == 3){
         nextRunnerInfo = "GentRunner";
     } else {
         nextRunnerInfo = "";
     }
 
-    //TODO add other jerseys (now only green and yellow jersey and Gent)
     let currentRunnerInfo = "";
     if (data.currentRunner.name == data.quickest7Runners[0]?.name){
         currentRunnerInfo = "quickestRunner";
     } else if (data.currentRunner.name == data.top7Runners[0]?.name){
         currentRunnerInfo = "topRunner";
+    } else if (data.currentRunner.name == data.top7LapPoints[0]?.name){
+        currentRunnerInfo = "topPoints";
     } else if (data.currentRunner.facultyId == 3){
         currentRunnerInfo = "GentRunner";
+    } else if (data.currentRunner.name == data.top7FirstyearRunners[0]?.name){
+        currentRunnerInfo = "topFirstyearRunner";
     } else {
         currentRunnerInfo = "";
     }
 
-    //TODO add other jerseys (now only green and yellow jersey and Gent)
     let previousRunnerInfo = "";
     if (previousRunner.name == data.quickest7Runners[0]?.name){
         previousRunnerInfo = "quickestRunner";
     } else if (previousRunner.name == data.top7Runners[0]?.name){
         previousRunnerInfo = "topRunner";
+    } else if (previousRunner.name == data.top7LapPoints[0]?.name){
+        previousRunnerInfo = "topPoints";
     } else if (previousRunner.facultyId == 3){
         previousRunnerInfo = "GentRunner";
+    } else if (previousRunner.name == data.top7FirstyearRunners[0]?.name){
+        previousRunnerInfo = "topFirstyearRunner";
     } else {
         previousRunnerInfo = "";
     }
@@ -205,10 +218,30 @@ export default function LiveRunners() {
                     />
                 )}
 
+                {previousRunnerInfo === "topPoints" && (
+                    <Image
+                        src="/images/BollenShirt.png"
+                        alt="Bollen jersey"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
+                    />
+                )}
+
                 {previousRunnerInfo === "GentRunner" && (
                     <Image
                         src="/images/GentShirt.png"
                         alt="VTK jersey"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
+                    />
+                )}
+
+                {previousRunnerInfo === "topFirstyearRunner" && (
+                    <Image
+                        src="/images/WhiteShirt.png"
+                        alt="White jersey"
                         width={140}
                         height={140}
                         className="rounded-full object-cover flex-shrink-0"
@@ -267,10 +300,30 @@ export default function LiveRunners() {
                         />
                     )}
 
+                    {currentRunnerInfo === "topPoints" && (
+                        <Image
+                            src="/images/BollenShirt.png"
+                            alt="Bollen jersey"
+                            width={180}
+                            height={180}
+                            className="rounded-full object-cover"
+                        />
+                    )}
+
                     {currentRunnerInfo === "GentRunner" && (
                         <Image
                             src="/images/GentShirt.png"
                             alt="VTK jersey"
+                            width={180}
+                            height={180}
+                            className="rounded-full object-cover"
+                        />
+                    )}
+
+                    {currentRunnerInfo === "topFirstyearRunner" && (
+                        <Image
+                            src="/images/WhiteShirt.png"
+                            alt="White jersey"
                             width={180}
                             height={180}
                             className="rounded-full object-cover"
@@ -312,10 +365,30 @@ export default function LiveRunners() {
                     />
                 )}
 
+                {nextRunnerInfo === "topPoints" && (
+                    <Image
+                        src="/images/BollenShirt.png"
+                        alt="Bollen jersey"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
+                    />
+                )}
+
                 {nextRunnerInfo === "GentRunner" && (
                     <Image
                         src="/images/GentShirt.png"
                         alt="VTK jersey"
+                        width={140}
+                        height={140}
+                        className="rounded-full object-cover flex-shrink-0"
+                    />
+                )}
+
+                {nextRunnerInfo === "topFirstyearRunner" && (
+                    <Image
+                        src="/images/WhiteShirt.png"
+                        alt="White jersey"
                         width={140}
                         height={140}
                         className="rounded-full object-cover flex-shrink-0"
