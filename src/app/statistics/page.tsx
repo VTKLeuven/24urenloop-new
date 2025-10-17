@@ -190,10 +190,10 @@ export default function Statistics() {
         // Initial fetch
         fetchData();
 
-        // Poll for updates every 2 seconds
+        // Poll for updates every 1 second
         const pollInterval = setInterval(() => {
             fetchData();
-        }, 2000);
+        }, 1000);
 
         // Timer for current runner time (10ms)
         const timer = setInterval(() => {

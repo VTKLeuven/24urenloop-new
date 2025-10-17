@@ -42,11 +42,18 @@ export default function ControlsPage() {
     }
 
     useEffect(() => {
+        // Initial fetch
         fetchData();
+
+        // Poll for updates every 1 second
+        const pollInterval = setInterval(() => {
+            fetchData();
+        }, 1000);
 
         return () => {
             if (timerRef.current !== null) {
                 clearInterval(timerRef.current);
+                clearInterval(pollInterval);
             }
         };
     }, []);

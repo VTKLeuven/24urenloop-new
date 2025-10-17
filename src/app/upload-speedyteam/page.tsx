@@ -156,6 +156,7 @@ export default function UploadSpeedyteamPage() {
                             <li>• <strong>Voornaam</strong> (Column C) → firstName</li>
                             <li>• <strong>Achternaam</strong> (Column D) → lastName</li>
                             <li>• <strong>R-nummer</strong> (Column E) → identification</li>
+                            <li>• <strong>GSM-nummer</strong> (Column F) → phoneNumber</li>
                             <li>• <strong>Tijd in min:sec</strong> (Column G) → testTime</li>
                             <li>• <strong>Schoenmaat</strong> (Column I) → shoeSize</li>
                         </ul>
