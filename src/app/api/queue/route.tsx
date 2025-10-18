@@ -11,7 +11,7 @@ export async function GET() {
                     include: {
                         laps: {
                             orderBy: { startTime: 'desc' }, // or 'id' if that’s better
-                            take: 1, // only the most recent lap
+                            // take: 1, // only the most recent lap
                         },
                     },
                 },

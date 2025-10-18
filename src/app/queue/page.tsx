@@ -217,6 +217,19 @@ export default function QueuePage() {
             .padStart(2, '0')}`;
     }
 
+    function avgTime(laps: Lap[]): string {
+        if (!laps || laps.length === 0) return "... : ...";
+        let totalMs = 0;
+        for (let i = 0; i < laps.length; i++) {
+            totalMs += timeToMS(laps[i].time);
+        }
+        const avgMs = totalMs / laps.length;
+        const avgSec = Math.floor(avgMs / 1000);
+        const avgMinutes = Math.floor(avgSec / 60);
+        const avgSeconds = avgSec % 60;
+        return `${avgMinutes.toString().padStart(2, '0')}:${avgSeconds.toString().padStart(2, '0')}`;
+    }
+
 
     return (
         <div className="p-4 mx-auto w-auto">
@@ -248,6 +261,7 @@ export default function QueuePage() {
                                                     <span>
                                                         Last: {noMilliSeconds(entry.runner.laps?.[0]?.time ?? "??")} ─
                                                         Since: {formatTimeSince(entry.runner.laps?.[0]?.startTime.toString() ?? "??", entry.runner.laps?.[0]?.time ?? "??")} ─
+                                                        Avg: {avgTime(entry.runner.laps)} ─
                                                         Test: {rightTime(entry.runner.testTime)} ─
                                                         Shoe: {rightShoeSize(entry.runner.shoeSize)}
                                                       </span>
