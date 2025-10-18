@@ -19,6 +19,7 @@ interface QueueEntry {
 interface Group {
     name: string;
     laps: number;
+    points: number;
 }
 
 interface StatisticsData {
@@ -28,6 +29,8 @@ interface StatisticsData {
     currentQueue: QueueEntry[];
     groupLapRanking: Group[];
     top7Runners: Group[];
+    top7FirstyearRunners: Group[];
+    top7LapPoints: Group[];
 }
 
 // Toast + PR event types
@@ -122,6 +125,8 @@ export default function Statistics() {
         currentQueue: [],
         groupLapRanking: [],
         top7Runners: [],
+        top7FirstyearRunners: [],
+        top7LapPoints: [],
     });
 
     // Toast state + SSE subscription
@@ -252,8 +257,8 @@ export default function Statistics() {
                     <div className="text-5xl font-bold text-blue-600 tabular-nums">{countdown}</div>
                 </div>
 
-                {/* Grid 2x3 */}
-                <div className="grid grid-cols-3 grid-rows-2 gap-6 flex-1 overflow-hidden">
+                {/* Grid 4x2 */}
+                <div className="grid grid-cols-4 grid-rows-2 gap-6 flex-1 overflow-hidden">
                     {/* Current Runner */}
                     <div className="bg-white rounded-lg shadow-md p-6 flex flex-col min-h-0 relative">
                         <div aria-hidden className="absolute inset-0 rounded-lg" />
@@ -339,6 +344,35 @@ export default function Statistics() {
                                     key={index}
                                     left={runner.name}
                                     right={<span>{runner.laps}</span>}
+                                    highlight={index === 0}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                    {/* Most Laps Firstyears */}
+                    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col min-h-0">
+                        <h2 className="text-2xl font-bold mb-4">Most Laps First years</h2>
+                        <div className="space-y-2 overflow-auto">
+                            {data.top7FirstyearRunners.map((runner, index) => (
+                                <RowItem
+                                    key={index}
+                                    left={runner.name}
+                                    right={<span>{runner.laps}</span>}
+                                    highlight={index === 0}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Most Lap Points */}
+                    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col min-h-0">
+                        <h2 className="text-2xl font-bold mb-4">Most Points</h2>
+                        <div className="space-y-2 overflow-auto">
+                            {data.top7LapPoints.map((runner, index) => (
+                                <RowItem
+                                    key={index}
+                                    left={runner.name}
+                                    right={<span>{runner.points}</span>}
                                     highlight={index === 0}
                                 />
                             ))}

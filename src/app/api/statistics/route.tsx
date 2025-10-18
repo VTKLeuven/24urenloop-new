@@ -87,6 +87,54 @@ export async function GET() {
             .slice(0, 7)
             .map(([name, laps]) => ({ name, laps }));
 
+        // Retrieve runners with at least one lap
+        const runnersWithLaps = await prisma.runner.findMany({
+            where: {
+                laps: {
+                    some: {},
+                },
+            },
+            include: {
+                laps: true,
+            },
+        });
+
+        // Calculate lap points with custom hour ranges
+        const runnersWithPoints = runnersWithLaps.map(runner => {
+            const totalPoints = runner.laps.reduce((sum, lap) => {
+                const hour = new Date(lap.startTime).getHours() - 2; //- 2 for UTC + 2 timezone
+                let points = 0;
+
+                if (hour >= 20 || hour < 2) {
+                    points = 1;       // 20h-2h
+                } else if (hour >= 2 && hour < 4) {
+                    points = 3;       // 2h-4h
+                } else if (hour >= 4 && hour < 9) {
+                    points = 10;      // 4h-9h
+                } else if (hour >= 9 && hour < 12) {
+                    points = 5;       // 9h-12h
+                } else if (hour >= 12 && hour < 18) {
+                    points = 1;       // 12h-18h
+                } else if (hour >= 18 && hour < 20) {
+                    points = 3;       // 18h-20h
+                }
+
+                return sum + points;
+            }, 0);
+
+            return {
+                name: `${runner.firstName} ${runner.lastName}`,
+                points: totalPoints,
+            };
+        });
+
+
+        // Sort descending and take top 10
+            const top7LapPoints = runnersWithPoints
+                .sort((a, b) => b.points - a.points)
+                .slice(0, 7);
+
+
         // Retrieve the top 7 runners with the most laps
         const top7Runners = await prisma.runner.findMany({
             where: {
@@ -105,6 +153,30 @@ export async function GET() {
             },
         });
 
+        // Retrieve the top 7 runners with the most laps who are first years
+        const top7FirstyearRunners = await prisma.runner.findMany({
+            where: {
+                laps: {
+                    some: {}, // at least one lap must exist
+                },
+                firstYear: true,
+            },
+            orderBy: {
+                laps: {
+                    _count: 'desc',
+                },
+            },
+            take: 7,
+            include: {
+                laps: true,
+            },
+        });
+
+        const top7FirstyearRunnersData = top7FirstyearRunners.map(runner => ({
+            name: `${runner.firstName} ${runner.lastName}`,
+            laps: runner.laps.length,
+        }));
+
         const top7RunnersData = top7Runners.map(runner => ({
             name: `${runner.firstName} ${runner.lastName}`,
             laps: runner.laps.length,
@@ -117,6 +189,8 @@ export async function GET() {
             currentQueue: currentQueueData,
             groupLapRanking,
             top7Runners: top7RunnersData,
+            top7FirstyearRunners: top7FirstyearRunnersData,
+            top7LapPoints: top7LapPoints,
         });
     } catch (error) {
         console.error('Error fetching statistics:', error);
